@@ -175,7 +175,7 @@ public class Logger {
         if (BUILDER.isWriter) {
             write(tag, msg, type);
         }
-        Log.println(type, tag, msg);
+        Log.println(type, TAG, tag + " " + msg);
     }
 
     public static final void log(int type, String tag, String msg, Throwable throwable) {
@@ -185,7 +185,7 @@ public class Logger {
         if (BUILDER.isWriter) {
             write(tag, msg, type, throwable);
         }
-        Log.println(type, tag, msg);
+        Log.println(type, TAG, tag + " " + msg);
     }
 
 
@@ -243,7 +243,7 @@ public class Logger {
 
     private static void input2File(final String input) {
         if (!createOrExistsFile()) {
-            Log.e("Logger", "create " + BUILDER.logFilePath + " failed!");
+            Log.e(TAG, "create " + BUILDER.logFilePath + " failed!");
             return;
         }
         EXECUTOR_SERVICE.execute(new Runnable() {
@@ -255,7 +255,7 @@ public class Logger {
                     bw.write(input);
                 } catch (IOException e) {
                     e.printStackTrace();
-                    Log.e("Logger", "log to " + BUILDER.logFilePath + " failed!");
+                    Log.e(TAG, "log to " + BUILDER.logFilePath + " failed!");
                 } finally {
                     try {
                         if (bw != null) {
