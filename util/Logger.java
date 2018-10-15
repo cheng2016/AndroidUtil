@@ -26,8 +26,9 @@ import java.util.concurrent.Executors;
  * Created by chengzj 2018/06/29
  */
 public class Logger {
+    public static final String TAG = Logger.class.getSimpleName();
     private static final DateFormat LOG_TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    private static final String LOG_FORMAT = "%s  %d/%s  %s/%s/%s：";
+    private static final String LOG_FORMAT = "%s  %d/%s  %c/%s  %s ";
     private static final String LINE_SEP = System.getProperty("line.separator");
     public static final int V = Log.VERBOSE;
     public static final int D = Log.DEBUG;
@@ -44,7 +45,7 @@ public class Logger {
     public static class Builder {
         private boolean isWriter = true;
 
-        private Level currentLevel = Logger.Level.VERBOSE;
+        private Level currentLevel = Level.VERBOSE;
 
         private String defaultTag = "Logger";
 
@@ -69,10 +70,16 @@ public class Logger {
             Format sdf = new SimpleDateFormat("yyyy-MM-dd");
             fileName = sdf.format(new Date()) + ".txt";
             logFilePath = defaultDir + fileName;
+            Log.i(TAG, "pkgName：" + pkgName);
+            Log.i(TAG, "myPid：" + myPid);
+            Log.i(TAG, "defaultDir：" + defaultDir);
+            Log.i(TAG, "fileName：" + fileName);
+            Log.i(TAG, "logFilePath：" + logFilePath);
         }
 
         /**
          * 设置是否写入文件
+         *
          * @param writer
          */
         public void setWriter(boolean writer) {
@@ -81,6 +88,7 @@ public class Logger {
 
         /**
          * 设置日志等级
+         *
          * @param currentLevel
          */
         public void setCurrentLevel(Level currentLevel) {
@@ -89,6 +97,7 @@ public class Logger {
 
         /**
          * 设置日志默认存储路径
+         *
          * @param defaultDir
          */
         public void setDefaultDir(String defaultDir) {
@@ -98,6 +107,7 @@ public class Logger {
 
         /**
          * 设置日志输出标记
+         *
          * @param defaultTag
          */
         public void setDefaultTag(String defaultTag) {
@@ -160,20 +170,22 @@ public class Logger {
 
     public static final void log(int type, String tag, String msg) {
         if (BUILDER.currentLevel.value > Level.WARN.value) {
-            Log.println(type, tag, msg);
+            return;
         }
         if (BUILDER.isWriter) {
             write(tag, msg, type);
         }
+        Log.println(type, tag, msg);
     }
 
     public static final void log(int type, String tag, String msg, Throwable throwable) {
         if (BUILDER.currentLevel.value > Level.WARN.value) {
-            Log.println(type, tag, msg);
+            return;
         }
         if (BUILDER.isWriter) {
             write(tag, msg, type, throwable);
         }
+        Log.println(type, tag, msg);
     }
 
 
@@ -186,7 +198,8 @@ public class Logger {
      */
     private static final void write(String tag, String msg, int type) {
         String time = LOG_TIME_FORMAT.format(new Date(System.currentTimeMillis()));
-        final StringBuilder sb = new StringBuilder(String.format(LOG_FORMAT, time, BUILDER.myPid, BUILDER.pkgName, T[type], BUILDER.defaultTag, tag));
+        String head = String.format(LOG_FORMAT, time, BUILDER.myPid, BUILDER.pkgName, T[type - V], BUILDER.defaultTag, tag);
+        StringBuilder sb = new StringBuilder(head);
         sb.append(msg);
         sb.append(LINE_SEP);
         //打印到文件日志中
@@ -203,7 +216,8 @@ public class Logger {
      */
     private static final void write(String tag, String msg, int type, Throwable throwable) {
         String time = LOG_TIME_FORMAT.format(new Date(System.currentTimeMillis()));
-        StringBuilder sb = new StringBuilder(String.format(LOG_FORMAT, time, BUILDER.myPid, BUILDER.pkgName, T[type], BUILDER.defaultTag, tag));
+        String head = String.format(LOG_FORMAT, time, BUILDER.myPid, BUILDER.pkgName, T[type - V], BUILDER.defaultTag, tag);
+        StringBuilder sb = new StringBuilder(head);
         sb.append(msg);
         sb.append(LINE_SEP);
         sb.append(saveCrashInfo(throwable));
@@ -230,6 +244,7 @@ public class Logger {
     private static void input2File(final String input) {
         if (!createOrExistsFile()) {
             Log.e("Logger", "create " + BUILDER.logFilePath + " failed!");
+            return;
         }
         EXECUTOR_SERVICE.execute(new Runnable() {
             @Override
@@ -282,9 +297,10 @@ public class Logger {
 
     public static void main(String[] args) {
         String timeStamp = LOG_TIME_FORMAT.format(new Date());
+        char[] T = new char[]{'V', 'D', 'I', 'W', 'E', 'A'};
         String tag = "tag";
         String msg = "this is a message!";
-        String str = String.format(LOG_FORMAT, timeStamp, 123, "com.cheng.app", "V","Logger", tag);
+        String str = String.format(LOG_FORMAT, timeStamp, 123, "com.cheng.app", T[0], "logg", tag);
         System.out.println(str + msg);
     }
 }
