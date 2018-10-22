@@ -51,10 +51,6 @@ public class Logger {
 
         private String defaultDir;
 
-        private String fileName;
-
-        private String logFilePath;
-
         private String pkgName;
 
         private int myPid;
@@ -67,14 +63,9 @@ public class Logger {
             } else {
                 defaultDir = App.getInstance().getCacheDir().getAbsolutePath() + "/wecare/logger";
             }
-            Format sdf = new SimpleDateFormat("yyyy-MM-dd");
-            fileName = sdf.format(new Date()) + ".txt";
-            logFilePath = defaultDir + fileName;
             Log.i(TAG, "pkgName：" + pkgName);
             Log.i(TAG, "myPid：" + myPid);
             Log.i(TAG, "defaultDir：" + defaultDir);
-            Log.i(TAG, "fileName：" + fileName);
-            Log.i(TAG, "logFilePath：" + logFilePath);
         }
 
         /**
@@ -102,7 +93,6 @@ public class Logger {
          */
         public void setDefaultDir(String defaultDir) {
             this.defaultDir = defaultDir;
-            logFilePath = defaultDir + fileName;
         }
 
         /**
@@ -198,12 +188,14 @@ public class Logger {
      */
     private static final void write(String tag, String msg, int type) {
         String time = LOG_TIME_FORMAT.format(new Date(System.currentTimeMillis()));
+        String date = time.substring(0, 10);
+        String fullPath = BUILDER.defaultDir + date + ".txt";
         String head = String.format(LOG_FORMAT, time, BUILDER.myPid, BUILDER.pkgName, T[type - V], BUILDER.defaultTag, tag);
         StringBuilder sb = new StringBuilder(head);
         sb.append(msg);
         sb.append(LINE_SEP);
         //打印到文件日志中
-        input2File(sb.toString());
+        input2File(sb.toString(),fullPath);
     }
 
     /**
@@ -216,13 +208,15 @@ public class Logger {
      */
     private static final void write(String tag, String msg, int type, Throwable throwable) {
         String time = LOG_TIME_FORMAT.format(new Date(System.currentTimeMillis()));
+        String date = time.substring(0, 10);
+        String fullPath = BUILDER.defaultDir + date + ".txt";
         String head = String.format(LOG_FORMAT, time, BUILDER.myPid, BUILDER.pkgName, T[type - V], BUILDER.defaultTag, tag);
         StringBuilder sb = new StringBuilder(head);
         sb.append(msg);
         sb.append(LINE_SEP);
         sb.append(saveCrashInfo(throwable));
         //打印到文件日志中
-        input2File(sb.toString());
+        input2File(sb.toString(),fullPath);
     }
 
     private static String saveCrashInfo(Throwable ex) {
@@ -241,9 +235,9 @@ public class Logger {
         return sb.toString();
     }
 
-    private static void input2File(final String input) {
-        if (!createOrExistsFile()) {
-            Log.e(TAG, "create " + BUILDER.logFilePath + " failed!");
+    private static void input2File(final String input,final String fullPath) {
+        if (!createOrExistsFile(fullPath)) {
+            Log.e(TAG, "create " + fullPath + " failed!");
             return;
         }
         EXECUTOR_SERVICE.execute(new Runnable() {
@@ -251,11 +245,11 @@ public class Logger {
             public void run() {
                 BufferedWriter bw = null;
                 try {
-                    bw = new BufferedWriter(new FileWriter(BUILDER.logFilePath, true));
+                    bw = new BufferedWriter(new FileWriter(fullPath, true));
                     bw.write(input);
                 } catch (IOException e) {
                     e.printStackTrace();
-                    Log.e(TAG, "log to " + BUILDER.logFilePath + " failed!");
+                    Log.e(TAG, "log to " + fullPath + " failed!");
                 } finally {
                     try {
                         if (bw != null) {
@@ -269,8 +263,8 @@ public class Logger {
         });
     }
 
-    private static boolean createOrExistsFile() {
-        File file = new File(BUILDER.logFilePath);
+    private static boolean createOrExistsFile(String fullPath) {
+        File file = new File(fullPath);
         if (file.exists()) return file.isFile();
         if (!createOrExistsDir(file.getParentFile())) return false;
         try {
