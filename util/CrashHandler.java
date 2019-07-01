@@ -171,7 +171,7 @@ public class CrashHandler implements UncaughtExceptionHandler {
             String time = formatter.format(new Date());
             String fileName = time + ".txt";
             if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-                String path = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "wecare/v4/crash" + File.separator;
+                String path = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "logger/crash" + File.separator;
                 File dir = new File(path);
                 if (!dir.exists()) {
                     dir.mkdirs();
