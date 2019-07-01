@@ -71,7 +71,6 @@ public class Logger {
         }
     }
 
-
     public static void setIsWriter(boolean isWriter) {
         Logger.isWriter = isWriter;
     }
@@ -141,7 +140,6 @@ public class Logger {
         log(W, target, msg, throwable);
     }
 
-
     public static final void log(int type, String tag, String msg) {
         if (currentLevel.value > Level.WARN.value) {
             return;
@@ -161,7 +159,6 @@ public class Logger {
         }
         Log.println(type, TAG, tag + " " + msg);
     }
-
 
     /**
      * 通过handler写入日志
@@ -267,8 +264,23 @@ public class Logger {
      * 判断是否缺少权限
      */
     private static boolean lacksPermission(Context context, String permission) {
-        return ContextCompat.checkSelfPermission(context, permission) ==
+//         return ContextCompat.checkSelfPermission(context, permission) ==
+//                 PackageManager.PERMISSION_DENIED;
+            return checkSelfPermission(context, permission) ==
                 PackageManager.PERMISSION_DENIED;
+    }
+    
+    /**
+     * v4 包的方法，抠出来的
+     * @param context
+     * @param permission
+     * @return
+     */
+    public static int checkSelfPermission(@NonNull Context context, @NonNull String permission) {
+        if (permission == null) {
+            throw new IllegalArgumentException("permission is null");
+        }
+        return context.checkPermission(permission, android.os.Process.myPid(), Process.myUid());
     }
     
     private static boolean createOrExistsFile(String fullPath) {
