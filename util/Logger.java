@@ -1,10 +1,14 @@
 package com.wecare.app.util;
 
+import android.Manifest;
+import android.content.Context;
+import android.content.pm.PackageManager;
 import android.os.Environment;
 import android.os.Process;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
-import com.wecare.app.App;
+import com.cds.iot.App;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -14,7 +18,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.text.DateFormat;
-import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.ExecutorService;
@@ -27,82 +30,50 @@ import java.util.concurrent.Executors;
  */
 public class Logger {
     public static final String TAG = Logger.class.getSimpleName();
-    private static final DateFormat LOG_TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    private static final String LOG_FORMAT = "%s  %d/%s  %c/%s  %s ";
-    private static final String LINE_SEP = System.getProperty("line.separator");
+    private static final char[] T = new char[]{'V', 'D', 'I', 'W', 'E', 'A'};
     public static final int V = Log.VERBOSE;
     public static final int D = Log.DEBUG;
     public static final int I = Log.INFO;
     public static final int W = Log.WARN;
     public static final int E = Log.ERROR;
     public static final int A = Log.ASSERT;
-    private static final char[] T = new char[]{'V', 'D', 'I', 'W', 'E', 'A'};
+
+    private static final DateFormat LOG_TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+    private static final String LINE_SEP = System.getProperty("line.separator");
+
+    private static final String LOG_FORMAT = "%s  %d/%d/%s  %c/%s  %s：";
 
     private static final ExecutorService EXECUTOR_SERVICE = Executors.newSingleThreadExecutor();
 
-    private static final Builder BUILDER = new Builder();
+    private static boolean isWriter = true;
 
-    public static class Builder {
-        private boolean isWriter = true;
+    private static Level currentLevel = Level.VERBOSE;
 
-        private Level currentLevel = Level.VERBOSE;
+    private static String defaultTag = "Logger";
 
-        private String defaultTag = "Logger";
+    private static String pkgName;
 
-        private String defaultDir;
+    private static int pkgCode;
 
-        private String pkgName;
+    private static int myPid;
 
-        private int myPid;
+    private static String defaultDir;
 
-        private Builder() {
-            pkgName = App.getInstance().getPackageName();
-            myPid = Process.myPid();
-            if (isSDCardOK()) {
-                defaultDir = Environment.getExternalStorageDirectory() + "/wecare/logger/";
-            } else {
-                defaultDir = App.getInstance().getCacheDir().getAbsolutePath() + "/wecare/logger";
-            }
-            Log.i(TAG, "pkgName：" + pkgName);
-            Log.i(TAG, "myPid：" + myPid);
-            Log.i(TAG, "defaultDir：" + defaultDir);
+    static {
+        pkgName = App.getInstance().getPackageName();
+        myPid = Process.myPid();
+        pkgCode = AppUtils.getVersionCode(App.getInstance());
+        if (isSDCardOK()) {
+            defaultDir = Environment.getExternalStorageDirectory() + "/wecare/v4/logger/";
+        } else {
+            defaultDir = App.getInstance().getCacheDir().getAbsolutePath() + "/wecare/v4/logger";
         }
+    }
 
-        /**
-         * 设置是否写入文件
-         *
-         * @param writer
-         */
-        public void setWriter(boolean writer) {
-            this.isWriter = writer;
-        }
 
-        /**
-         * 设置日志等级
-         *
-         * @param currentLevel
-         */
-        public void setCurrentLevel(Level currentLevel) {
-            this.currentLevel = currentLevel;
-        }
-
-        /**
-         * 设置日志默认存储路径
-         *
-         * @param defaultDir
-         */
-        public void setDefaultDir(String defaultDir) {
-            this.defaultDir = defaultDir;
-        }
-
-        /**
-         * 设置日志输出标记
-         *
-         * @param defaultTag
-         */
-        public void setDefaultTag(String defaultTag) {
-            this.defaultTag = defaultTag;
-        }
+    public static void setIsWriter(boolean isWriter) {
+        Logger.isWriter = isWriter;
     }
 
     /**
@@ -134,12 +105,24 @@ public class Logger {
         log(I, target, msg);
     }
 
+    public static final void i(String target, String msg, Throwable throwable) {
+        log(I, target, msg, throwable);
+    }
+
     public static final void v(String target, String msg) {
         log(V, target, msg);
     }
 
+    public static final void v(String target, String msg, Throwable throwable) {
+        log(V, target, msg, throwable);
+    }
+
     public static final void d(String target, String msg) {
         log(D, target, msg);
+    }
+
+    public static final void d(String target, String msg, Throwable throwable) {
+        log(D, target, msg, throwable);
     }
 
     public static final void e(String target, String msg) {
@@ -158,21 +141,22 @@ public class Logger {
         log(W, target, msg, throwable);
     }
 
+
     public static final void log(int type, String tag, String msg) {
-        if (BUILDER.currentLevel.value > Level.WARN.value) {
+        if (currentLevel.value > Level.WARN.value) {
             return;
         }
-        if (BUILDER.isWriter) {
+        if (isWriter) {
             write(tag, msg, type);
         }
         Log.println(type, TAG, tag + " " + msg);
     }
 
     public static final void log(int type, String tag, String msg, Throwable throwable) {
-        if (BUILDER.currentLevel.value > Level.WARN.value) {
+        if (currentLevel.value > Level.WARN.value) {
             return;
         }
-        if (BUILDER.isWriter) {
+        if (isWriter) {
             write(tag, msg, type, throwable);
         }
         Log.println(type, TAG, tag + " " + msg);
@@ -184,18 +168,17 @@ public class Logger {
      *
      * @param tag
      * @param msg
-     * @param type
+     * @param level
      */
-    private static final void write(String tag, String msg, int type) {
-        String time = LOG_TIME_FORMAT.format(new Date(System.currentTimeMillis()));
-        String date = time.substring(0, 10);
-        String fullPath = BUILDER.defaultDir + date + ".txt";
-        String head = String.format(LOG_FORMAT, time, BUILDER.myPid, BUILDER.pkgName, T[type - V], BUILDER.defaultTag, tag);
-        StringBuilder sb = new StringBuilder(head);
+    private static final void write(String tag, String msg, int level) {
+        String timeStamp = LOG_TIME_FORMAT.format(new Date(System.currentTimeMillis()));
+        String date = timeStamp.substring(0, 10);
+        String fullPath = defaultDir + date + ".txt";
+        StringBuilder sb = new StringBuilder(String.format(LOG_FORMAT, timeStamp, myPid, pkgCode, pkgName, T[level - V], defaultTag, tag));
         sb.append(msg);
         sb.append(LINE_SEP);
         //打印到文件日志中
-        input2File(sb.toString(),fullPath);
+        input2File(sb.toString(), fullPath);
     }
 
     /**
@@ -203,22 +186,21 @@ public class Logger {
      *
      * @param tag       日志标签
      * @param msg       日志内容
-     * @param type      日志级别
+     * @param level     日志级别
      * @param throwable 异常捕获
      */
-    private static final void write(String tag, String msg, int type, Throwable throwable) {
-        String time = LOG_TIME_FORMAT.format(new Date(System.currentTimeMillis()));
-        String date = time.substring(0, 10);
-        String fullPath = BUILDER.defaultDir + date + ".txt";
-        String head = String.format(LOG_FORMAT, time, BUILDER.myPid, BUILDER.pkgName, T[type - V], BUILDER.defaultTag, tag);
-        StringBuilder sb = new StringBuilder(head);
+    private static final void write(String tag, String msg, int level, Throwable throwable) {
+        String timeStamp = LOG_TIME_FORMAT.format(new Date(System.currentTimeMillis()));
+        String date = timeStamp.substring(0, 10);
+        String fullPath = defaultDir + date + ".txt";
+        StringBuilder sb = new StringBuilder(String.format(LOG_FORMAT, timeStamp, myPid, pkgCode, pkgName, T[level - V], defaultTag, tag));
         sb.append(msg);
         sb.append(LINE_SEP);
         sb.append(saveCrashInfo(throwable));
         //打印到文件日志中
-        input2File(sb.toString(),fullPath);
+        input2File(sb.toString(), fullPath);
     }
-
+    
     private static String saveCrashInfo(Throwable ex) {
         StringBuffer sb = new StringBuffer();
         Writer writer = new StringWriter();
@@ -235,9 +217,13 @@ public class Logger {
         return sb.toString();
     }
 
-    private static void input2File(final String input,final String fullPath) {
+    private static void input2File(final String input, final String fullPath) {
+        if (lacksPermissions(App.getInstance(), Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            Log.e(TAG, "很抱歉，没有读写权限，无法写入SD卡中");
+            return;
+        }
         if (!createOrExistsFile(fullPath)) {
-            Log.e(TAG, "create " + fullPath + " failed!");
+            Log.e("Logger", "create " + fullPath + " failed!");
             return;
         }
         EXECUTOR_SERVICE.execute(new Runnable() {
@@ -249,7 +235,7 @@ public class Logger {
                     bw.write(input);
                 } catch (IOException e) {
                     e.printStackTrace();
-                    Log.e(TAG, "log to " + fullPath + " failed!");
+                    Log.e("Logger", "log to " + fullPath + " failed!");
                 } finally {
                     try {
                         if (bw != null) {
@@ -262,7 +248,29 @@ public class Logger {
             }
         });
     }
+    
+    /**
+     * 判断权限集合
+     * permissions 权限数组
+     * return true-表示没有权限  false-表示权限已开启
+     */
+    public static boolean lacksPermissions(Context mContexts, String... args) {
+        for (String permission : args) {
+            if (lacksPermission(mContexts, permission)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
+    /**
+     * 判断是否缺少权限
+     */
+    private static boolean lacksPermission(Context context, String permission) {
+        return ContextCompat.checkSelfPermission(context, permission) ==
+                PackageManager.PERMISSION_DENIED;
+    }
+    
     private static boolean createOrExistsFile(String fullPath) {
         File file = new File(fullPath);
         if (file.exists()) return file.isFile();
@@ -291,6 +299,7 @@ public class Logger {
 
     public static void main(String[] args) {
         String timeStamp = LOG_TIME_FORMAT.format(new Date());
+        System.out.println("date: " + timeStamp.substring(0, 10));
         char[] T = new char[]{'V', 'D', 'I', 'W', 'E', 'A'};
         String tag = "tag";
         String msg = "this is a message!";
