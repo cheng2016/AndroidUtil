@@ -65,9 +65,9 @@ public class Logger {
         myPid = Process.myPid();
         pkgCode = AppUtils.getVersionCode(App.getInstance());
         if (isSDCardOK()) {
-            defaultDir = Environment.getExternalStorageDirectory() + "/wecare/v4/logger/";
+            defaultDir = Environment.getExternalStorageDirectory() + "/logger/";
         } else {
-            defaultDir = App.getInstance().getCacheDir().getAbsolutePath() + "/wecare/v4/logger";
+            defaultDir = App.getInstance().getCacheDir().getAbsolutePath() + "/logger";
         }
     }
 
