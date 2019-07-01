@@ -5,10 +5,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Environment;
 import android.os.Process;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
-
-import com.cds.iot.App;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -276,7 +273,7 @@ public class Logger {
      * @param permission
      * @return
      */
-    public static int checkSelfPermission(@NonNull Context context, @NonNull String permission) {
+    public static int checkSelfPermission(Context context, String permission) {
         if (permission == null) {
             throw new IllegalArgumentException("permission is null");
         }
