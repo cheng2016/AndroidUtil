@@ -82,7 +82,7 @@ Use: in application onCreate方法中执行以下方法
 
 # License
 
-    Copyright 2017 cheng2016,Inc.
+    Copyright 2018 cheng2016,Inc.
     
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
