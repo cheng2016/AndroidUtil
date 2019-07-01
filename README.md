@@ -45,6 +45,24 @@ mHelper.requestPermissions("请授予[录音]，[读写]权限，否则无法录
                     Log.e("sendMsgToPhone onFailer","current Thread: " + Thread.currentThread().getName());
                 }
             });
+            
+## [HttpUtil](util/HttpUtil.java)
+
+一个简易 AsyncHttp 库的工具类。代码有一定参考性。（该库目前以落后，非主流，无维护）
+
+    HttpUtil.post(ctx, HttpConfig.SENDMSGTOPHONE_URL, json.toString(), new OkHttpUtil.SimpleResponseHandler() {
+                @Override
+                public void onSuccess(Call call, Response response) {
+                    Log.e("sendMsgToPhone onSuccess","current Thread: " + Thread.currentThread().getName());
+
+                }
+
+                @Override
+                public void onFailer(Exception e) {
+                    Log.e("sendMsgToPhone onFailer","current Thread: " + Thread.currentThread().getName());
+                }
+            });
+
 
 ## [CrashHandler](util/CrashHandler.java)
 
