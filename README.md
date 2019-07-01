@@ -72,6 +72,12 @@ Use: in application onCreate方法中执行以下方法
     
     CrashHandler.getInstance.init(this);
     
+    
+## [PreferenceUtils](util/PreferenceUtils.java)
+
+一个简洁易用的SharedPreference工具类。
+
+    PreferenceUtils.setPrefString(MainActivity.this,"key","values");
 
 ## Contact Me
 
