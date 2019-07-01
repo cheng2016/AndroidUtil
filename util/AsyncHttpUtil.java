@@ -7,12 +7,12 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 import cz.msebera.android.httpclient.Header;
 
 /**
- * AsyncHttpUtil 工具类
+ * android-async-http 库的工具类
  * 
  * 依赖 httpclient-4.3.6、android-async-http-1.4.9
  */
 
-public class AsyncHttpUtil {
+public class HttpUtil {
     private static LoadingBar loadingBar;
     private static AsyncHttpClient client = new AsyncHttpClient();
     private static boolean isSetLoading = false;
