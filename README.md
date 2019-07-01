@@ -3,9 +3,11 @@ android 私人工具类集合
 
 ## [Logger](util/Logger.java)
 
-文件日志类，任何高频读写情况下都能保证文件日志写入的稳定性。
+文件日志类，任何高频读写情况下都能保证文件日志写入的稳定性，直接使用无需配置，简介易用。
 
-
+    Logger.i(TAG,"this is a logger message");
+    
+    Logger.e(TAG,"this is a error message",error);
 
 ## [PermissionHelper](util/PermissionHelper.java) 
 
