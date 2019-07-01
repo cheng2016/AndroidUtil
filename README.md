@@ -76,7 +76,7 @@ Use: in application onCreate方法中执行以下方法
 ### Contact Me
 
 - Github: github.com/cheng2016
-- Email: mitnick.cheng@outlook.com/mitnick.cheng@gmail.com
+- Email: mitnick.cheng@outlook.com
 - QQ: 1102743539
 
 
