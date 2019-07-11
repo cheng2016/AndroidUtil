@@ -16,7 +16,7 @@ import java.util.Map;
 /**
  *
  * 阿里巴巴支付工具类
- *
+ * alipaySdk-20170623-proguard.jar依赖包
  */
 public class AlipayUtil {
     public interface CallbackListener {
