@@ -79,6 +79,14 @@ Use: in application onCreate方法中执行以下方法
 
     PreferenceUtils.setPrefString(MainActivity.this,"key","values");
 
+## [AlipayUtil](util/AlipayUtil.java)
+
+支付宝支付工具类
+
+User:
+    
+    AlipayUtil.instance().pay(context,json,payListener);
+
 ## Contact Me
 
 - Github: github.com/cheng2016
