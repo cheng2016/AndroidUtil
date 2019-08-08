@@ -9,6 +9,38 @@ import java.io.InputStreamReader;
 import java.util.Properties;
 
 public class ResourceUtils {
+    
+    /**
+	 * 纯粹反射获取资源id，比如getResource无法获取styleable类型的资源id和数组。采用这种方式获取
+	 * @param context
+	 * @param name
+	 * @param type
+	 * @return
+	 */
+	@SuppressWarnings("rawtypes")
+	private static Object getResourceId(Context context, String name, String type){
+		String className = context.getPackageName()+".R";
+		try{
+			
+			Class cls = Class.forName(className);
+			for(Class child : cls.getClasses()){
+				String sname = child.getSimpleName();
+				if(sname.equals(type)){
+					for(Field f : child.getFields()){
+						String fname = f.getName();
+						if(fname.equals(name)){
+							return f.get(null);
+						}
+					}
+				}
+			}
+			
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
 
     /**
      * android 获取Asset中Properties文件配置的键值对
