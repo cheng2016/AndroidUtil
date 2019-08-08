@@ -154,7 +154,7 @@ public class Logger {
         if (isWriter) {
             write(tag, msg, type, throwable);
         }
-        Log.println(type, TAG, tag + " " + msg);
+        Log.println(type, TAG, tag + " " + msg + " " + Log.getStackTraceString(throwable));
     }
 
     /**
