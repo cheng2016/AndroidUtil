@@ -10,7 +10,7 @@ import java.util.Properties;
 
 public class ResourceUtils {
     
-    /**
+	/**
 	 * 纯粹反射获取资源id，比如getResource无法获取styleable类型的资源id和数组。采用这种方式获取
 	 * @param context
 	 * @param name
@@ -21,7 +21,7 @@ public class ResourceUtils {
 	private static Object getResourceId(Context context, String name, String type){
 		String className = context.getPackageName()+".R";
 		try{
-			
+
 			Class cls = Class.forName(className);
 			for(Class child : cls.getClasses()){
 				String sname = child.getSimpleName();
@@ -34,11 +34,11 @@ public class ResourceUtils {
 					}
 				}
 			}
-			
+
 		}catch(Exception e){
 			e.printStackTrace();
 		}
-		
+
 		return null;
 	}
 
