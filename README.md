@@ -87,6 +87,23 @@ User:
     
     AlipayUtil.instance().pay(context,json,payListener);
 
+
+
+## [Lunar](util/Lunar.java)
+
+公历转农历工具类
+
+    Lunar lunar = new Lunar(calendar);    
+
+    String lunarStr = "";    
+    lunarStr=lunar.animalsYear()+"年(";    
+    lunarStr +=lunar.cyclical()+"年)";    
+    lunarStr +=lunar.toString();    
+    tvMsg3.setText(lunarStr);    
+
+    Lunar lunar = new Lunar(calendar); String lunarStr = ""; lunarStr=lunar.animalsYear()+"年("; lunarStr +=lunar.cyclical()+"年)"; lunarStr +=lunar.toString(); tvMsg3.setText(lunarStr);  
+
+
 ## Contact Me
 
 - Github: github.com/cheng2016
