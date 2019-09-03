@@ -1,6 +1,10 @@
 # AndroidUtils
 android 私人工具类集合
 
+## [LazyFragment](util/BaseFragment.java)
+
+懒加载fragment
+
 ## [Logger](util/Logger.java)
 
 文件日志类，任何高频读写情况下都能保证文件日志写入的稳定性，直接使用无需配置，简洁易用。
