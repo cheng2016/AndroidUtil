@@ -73,9 +73,34 @@ import okhttp3.logging.HttpLoggingInterceptor;
         isSetLoading = false;
         LogUtil.d("post", "url:" + url + "\njsonStr:" + jsonStr);
         MediaType mediaType = MediaType.parse("text/x-markdown; charset=utf-8");
+       //MediaType mediaType = MediaType.parse("application/json; charset=utf-8");
         Request request = new Request.Builder()
                 .url(url)
                 .post(RequestBody.create(mediaType, Util.generatingSign(jsonStr).toString()))
+                .build();
+//        client.newCall(request).enqueue(responseHandler);
+        Call call = client.newCall(request);
+        getDefaultThreadPool().execute(new ResponseRunnable(call, responseHandler));
+    }
+  
+    /**
+     * 表单请求参数
+     * @param ctx
+     * @param url
+     * @param formBody
+     * @param responseHandler
+     *
+     *  //创建表单请求参数
+     *   FormBody.Builder builder = new FormBody.Builder();
+     *   builder.add("cityName", cityName);
+     *   FormBody formBody = builder.build();
+     */
+    public static void postFormNoLoading(Context ctx, String url, FormBody formBody, final SimpleResponseHandler responseHandler) {
+        isSetLoading = false;
+        Logger.d("postFormNoLoading", "url:" + url);
+        Request request = new Request.Builder()
+                .url(url)
+                .post(formBody)
                 .build();
 //        client.newCall(request).enqueue(responseHandler);
         Call call = client.newCall(request);
