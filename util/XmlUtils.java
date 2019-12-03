@@ -72,12 +72,6 @@ public class XmlUtils {
 
 
     public static void wirteXmlConfig(final String token) {
-/*        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                wirteXmlConfigToSdcard(defaultPath, token);
-            }
-        }).start();*/
         wirteXmlConfigToSdcard(defaultPath, token);
     }
 
