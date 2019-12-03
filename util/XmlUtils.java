@@ -52,7 +52,7 @@ public class XmlUtil {
     public static void wirteXmlConfigToSdcard( String path, String imei) {
         File file = new File(path);
 //        if (!file.exists()) {
-            if (FileUtils.createOrExistsFile(path)) {
+            if (createOrExistsFile(path)) {
                 try {
                     XmlSerializer serializer = Xml.newSerializer();
                     FileOutputStream fos = new FileOutputStream(file);
@@ -108,29 +108,22 @@ public class XmlUtil {
             throw new IllegalArgumentException("permission is null");
         }
         return context.checkPermission(permission, android.os.Process.myPid(), Process.myUid());
-    }         
+    } 
+    
+        private static boolean createOrExistsFile(String fullPath) {
+            File file = new File(fullPath);
+            if (file.exists()) return file.isFile();
+            if (!createOrExistsDir(file.getParentFile())) return false;
+            try {
+                return file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+
+    private static boolean createOrExistsDir(final File file) {
+        return file != null && (file.exists() ? file.isDirectory() : file.mkdirs());
+    }
                 
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
+}
