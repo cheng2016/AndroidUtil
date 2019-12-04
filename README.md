@@ -144,6 +144,19 @@ xml文件读取、写入工具类
             return token;
         }
 
+## [RegexUtils.java](util/RegexUtils.java)
+
+一个正则工具类
+
+    isMobileExact
+    isTelephone
+    isIDCard15
+    isEmail
+    isURL
+    isZh
+    isUsername
+
+
 ## Contact Me
 
 - Github: github.com/cheng2016
