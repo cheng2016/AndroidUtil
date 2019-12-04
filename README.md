@@ -157,6 +157,22 @@ xml文件读取、写入工具类
     isUsername
 
 
+## [DeviceUtil](util/DeviceUtil)
+
+    getMacAddress
+    getManufacturer
+    getModel
+    isSDCardEnable
+    getSDCardPath
+    isPhone
+    getDeviceIMEI
+
+
+## [AppUtil](util/AppUtil)
+
+    getVersionName
+    getVersionCode
+
 ## Contact Me
 
 - Github: github.com/cheng2016
