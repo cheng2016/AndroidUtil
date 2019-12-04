@@ -172,6 +172,15 @@ xml文件读取、写入工具类
 
     getVersionName
     getVersionCode
+    
+## [ResourceUtils](util/ResourceUtils)
+
+    getResourceId
+    getProperties
+    getFileFromAssets
+    getFileFromRaw
+
+
 
 ## Contact Me
 
