@@ -108,7 +108,7 @@ User:
     Lunar lunar = new Lunar(calendar); String lunarStr = ""; lunarStr=lunar.animalsYear()+"年("; lunarStr +=lunar.cyclical()+"年)"; lunarStr +=lunar.toString(); tvMsg3.setText(lunarStr);  
 
 
-## [XmlUtils](util/XmlUtils)
+## [XmlUtils](util/XmlUtils.java)
 
 xml文件读取、写入工具类
 
@@ -144,7 +144,7 @@ xml文件读取、写入工具类
             return token;
         }
 
-## [RegexUtils.java](util/RegexUtils.java)
+## [RegexUtils](util/RegexUtils.java)
 
 一个正则工具类
 
@@ -157,7 +157,7 @@ xml文件读取、写入工具类
     isUsername
 
 
-## [DeviceUtil](util/DeviceUtil)
+## [DeviceUtils](util/DeviceUtils.java)
 
     getMacAddress
     getManufacturer
@@ -168,12 +168,12 @@ xml文件读取、写入工具类
     getDeviceIMEI
 
 
-## [AppUtil](util/AppUtil)
+## [AppUtils](util/AppUtils.java)
 
     getVersionName
     getVersionCode
     
-## [ResourceUtils](util/ResourceUtils)
+## [ResourceUtils](util/ResourceUtils.java)
 
     getResourceId
     getProperties
