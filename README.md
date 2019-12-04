@@ -108,6 +108,42 @@ User:
     Lunar lunar = new Lunar(calendar); String lunarStr = ""; lunarStr=lunar.animalsYear()+"年("; lunarStr +=lunar.cyclical()+"年)"; lunarStr +=lunar.toString(); tvMsg3.setText(lunarStr);  
 
 
+## [XmlUtils](util/XmlUtils)
+
+xml文件读取、写入工具类
+
+
+    public static String readLocalXmlConfig(String path) {
+            String token = "";
+            final File file = new File(path);
+            if (file.exists()) {
+                try {
+                    FileInputStream fis = new FileInputStream(file);
+                    XmlPullParser parser = Xml.newPullParser();
+                    parser.setInput(fis, "UTF-8");
+                    int eventType = parser.getEventType();
+                    while (eventType != XmlPullParser.END_DOCUMENT) {
+                        switch (eventType) {
+                            case XmlPullParser.START_DOCUMENT:
+                                break;
+                            case XmlPullParser.START_TAG:
+                                String tagName = parser.getName();
+                                if (tagName.equals("token")) {
+                                    token = parser.nextText();
+                                    Logger.i(TAG, "readLocalXmlConfig 读取成功, token : " + token);
+                                }
+                                break;
+                        }
+                        eventType = parser.next();
+                    }
+                    fis.close();
+                } catch (Exception e) {
+                    Logger.e(TAG, "readLocalXmlConfig 读取失败 ", e);
+                }
+            }
+            return token;
+        }
+
 ## Contact Me
 
 - Github: github.com/cheng2016
