@@ -65,7 +65,6 @@ import okhttp3.logging.HttpLoggingInterceptor;
                 .url(url)
                 .post(RequestBody.create(mediaType, Util.generatingSign(jsonStr).toString()))
                 .build();
-//        client.newCall(request).enqueue(responseHandler);
         Call call = client.newCall(request);
         getDefaultThreadPool().execute(new ResponseRunnable(call, responseHandler));
     }
@@ -79,7 +78,6 @@ import okhttp3.logging.HttpLoggingInterceptor;
                 .url(url)
                 .post(RequestBody.create(mediaType, Util.generatingSign(jsonStr).toString()))
                 .build();
-//        client.newCall(request).enqueue(responseHandler);
         Call call = client.newCall(request);
         getDefaultThreadPool().execute(new ResponseRunnable(call, responseHandler));
     }
@@ -103,7 +101,6 @@ import okhttp3.logging.HttpLoggingInterceptor;
                 .url(url)
                 .post(formBody)
                 .build();
-//        client.newCall(request).enqueue(responseHandler);
         Call call = client.newCall(request);
         getDefaultThreadPool().execute(new ResponseRunnable(call, responseHandler));
     }
@@ -250,44 +247,3 @@ import okhttp3.logging.HttpLoggingInterceptor;
         }
     }
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
- 
