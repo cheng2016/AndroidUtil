@@ -36,6 +36,7 @@ import okhttp3.logging.HttpLoggingInterceptor;
     private static final String TAG = "OkHttpUtil";
     private static LoadingBar loadingBar;
     private static volatile boolean isSetLoading = false;
+    private static volatile boolean isShowLoading = false;
     private static OkHttpClient client;
 
     static {
@@ -214,13 +215,15 @@ import okhttp3.logging.HttpLoggingInterceptor;
             Log.d(TAG, "SimpleResponseHandler    onStart");
             if (isSetLoading) {
                 loadingBar.show();
+                isShowLoading = true;
             }
         }
 
         public void onFinish() {
             Log.d(TAG, "SimpleResponseHandler    onFinish");
-            if (isSetLoading || (loadingBar != null && loadingBar.isShowing())) {
+            if (isSetLoading || (loadingBar != null && loadingBar.isShowing()) || isShowLoading) {
                 loadingBar.cancel();
+                isShowLoading = false;
             }
         }
     
