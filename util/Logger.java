@@ -1,5 +1,3 @@
-package com.wecare.app.util;
-
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -24,6 +22,7 @@ import java.util.concurrent.Executors;
  * 文件日志工具类
  * <p>
  * Created by chengzj 2018/06/29
+ * Update by chengzj 2020/08/20
  */
 public class Logger {
     public static final String TAG = Logger.class.getSimpleName();
@@ -39,34 +38,47 @@ public class Logger {
 
     private static final String LINE_SEP = System.getProperty("line.separator");
 
-    private static final String LOG_FORMAT = "%s  %d/%d/%s  %c/%s  %s：";
+    private static final String LOG_FORMAT = "%s  %d-%d/%s  %c/%s  %s：";
 
     private static final ExecutorService EXECUTOR_SERVICE = Executors.newSingleThreadExecutor();
 
-    private static boolean isWriter = true;
+    private static boolean hasPermissions = false;
+
+    private static boolean isWriter = false;
+
+    public static boolean isDebug = true;
 
     private static Level currentLevel = Level.VERBOSE;
 
-    private static String defaultTag = "Logger";
+    private static String defaultTag = "HY";
 
     private static String pkgName;
-
-    private static int pkgCode;
 
     private static int myPid;
 
     private static String defaultDir;
 
-    static {
-        pkgName = App.getInstance().getPackageName();
+    /**
+     * application context
+     *
+     * @param context
+     */
+    public static void init(Context context) {
+        if (lacksPermissions(context, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            Log.e(TAG, "很抱歉，没有读写权限，无法写入SD卡中");
+            hasPermissions = false;
+        }else {
+            hasPermissions = true;
+        }
+        pkgName = context.getPackageName();
         myPid = Process.myPid();
-        pkgCode = AppUtils.getVersionCode(App.getInstance());
         if (isSDCardOK()) {
-            defaultDir = Environment.getExternalStorageDirectory() + "/logger/";
+            defaultDir = Environment.getExternalStorageDirectory() + File.separator + pkgName + File.separator + "logger" + File.separator;
         } else {
-            defaultDir = App.getInstance().getCacheDir().getAbsolutePath() + "/logger";
+            defaultDir = context.getCacheDir().getAbsolutePath() + File.separator + pkgName + File.separator + "logger" + File.separator;
         }
     }
+
 
     public static void setIsWriter(boolean isWriter) {
         Logger.isWriter = isWriter;
@@ -97,6 +109,10 @@ public class Logger {
         }
     }
 
+    public static final void i(String msg) {
+        log(I, defaultTag, msg);
+    }
+
     public static final void i(String target, String msg) {
         log(I, target, msg);
     }
@@ -113,12 +129,20 @@ public class Logger {
         log(V, target, msg, throwable);
     }
 
+    public static final void d(String msg) {
+        log(D, defaultTag, msg);
+    }
+
     public static final void d(String target, String msg) {
         log(D, target, msg);
     }
 
     public static final void d(String target, String msg, Throwable throwable) {
         log(D, target, msg, throwable);
+    }
+
+    public static final void e(String msg) {
+        log(E, defaultTag, msg);
     }
 
     public static final void e(String target, String msg) {
@@ -141,20 +165,23 @@ public class Logger {
         if (currentLevel.value > Level.WARN.value) {
             return;
         }
-        if (isWriter) {
+        if (isDebug)
+            Log.println(type, TAG, tag + " " + msg);
+        if (isWriter && hasPermissions) {
             write(tag, msg, type);
         }
-        Log.println(type, TAG, tag + " " + msg);
     }
 
     public static final void log(int type, String tag, String msg, Throwable throwable) {
         if (currentLevel.value > Level.WARN.value) {
             return;
         }
-        if (isWriter) {
+
+        if (isDebug)
+            Log.println(type, TAG, tag + " " + msg + " " + Log.getStackTraceString(throwable));
+        if (isWriter && hasPermissions) {
             write(tag, msg, type, throwable);
         }
-        Log.println(type, TAG, tag + " " + msg + " " + Log.getStackTraceString(throwable));
     }
 
     /**
@@ -168,7 +195,7 @@ public class Logger {
         String timeStamp = LOG_TIME_FORMAT.format(new Date(System.currentTimeMillis()));
         String date = timeStamp.substring(0, 10);
         String fullPath = defaultDir + date + ".txt";
-        StringBuilder sb = new StringBuilder(String.format(LOG_FORMAT, timeStamp, myPid, pkgCode, pkgName, T[level - V], defaultTag, tag));
+        StringBuilder sb = new StringBuilder(String.format(LOG_FORMAT, timeStamp, myPid, myPid, pkgName, T[level - V], defaultTag, tag));
         sb.append(msg);
         sb.append(LINE_SEP);
         //打印到文件日志中
@@ -187,14 +214,14 @@ public class Logger {
         String timeStamp = LOG_TIME_FORMAT.format(new Date(System.currentTimeMillis()));
         String date = timeStamp.substring(0, 10);
         String fullPath = defaultDir + date + ".txt";
-        StringBuilder sb = new StringBuilder(String.format(LOG_FORMAT, timeStamp, myPid, pkgCode, pkgName, T[level - V], defaultTag, tag));
+        StringBuilder sb = new StringBuilder(String.format(LOG_FORMAT, timeStamp, myPid, myPid, pkgName, T[level - V], defaultTag, tag));
         sb.append(msg);
         sb.append(LINE_SEP);
         sb.append(saveCrashInfo(throwable));
         //打印到文件日志中
         input2File(sb.toString(), fullPath);
     }
-    
+
     private static String saveCrashInfo(Throwable ex) {
         StringBuffer sb = new StringBuffer();
         Writer writer = new StringWriter();
@@ -212,10 +239,6 @@ public class Logger {
     }
 
     private static void input2File(final String input, final String fullPath) {
-        if (lacksPermissions(App.getInstance(), Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            Log.e(TAG, "很抱歉，没有读写权限，无法写入SD卡中");
-            return;
-        }
         if (!createOrExistsFile(fullPath)) {
             Log.e("Logger", "create " + fullPath + " failed!");
             return;
@@ -242,7 +265,7 @@ public class Logger {
             }
         });
     }
-    
+
     /**
      * 判断权限集合
      * permissions 权限数组
@@ -263,12 +286,13 @@ public class Logger {
     private static boolean lacksPermission(Context context, String permission) {
 //         return ContextCompat.checkSelfPermission(context, permission) ==
 //                 PackageManager.PERMISSION_DENIED;
-            return checkSelfPermission(context, permission) ==
+        return checkSelfPermission(context, permission) ==
                 PackageManager.PERMISSION_DENIED;
     }
-    
+
     /**
      * v4 包的方法，抠出来的
+     *
      * @param context
      * @param permission
      * @return
@@ -279,7 +303,7 @@ public class Logger {
         }
         return context.checkPermission(permission, android.os.Process.myPid(), Process.myUid());
     }
-    
+
     private static boolean createOrExistsFile(String fullPath) {
         File file = new File(fullPath);
         if (file.exists()) return file.isFile();
