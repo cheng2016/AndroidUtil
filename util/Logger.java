@@ -43,7 +43,7 @@ public class Logger {
 
     private static boolean hasPermissions = false;
 
-    private static boolean isWriter = false;
+    private static boolean isWriter = true;
 
     private static boolean isDebug = true;
 
