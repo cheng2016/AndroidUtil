@@ -22,7 +22,6 @@ import java.util.concurrent.Executors;
  * 文件日志工具类
  * <p>
  * Created by chengzj 2018/06/29
- * Update by chengzj 2020/08/20
  */
 public class Logger {
     public static final String TAG = Logger.class.getSimpleName();
@@ -46,13 +45,13 @@ public class Logger {
 
     private static boolean isWriter = false;
 
-    public static boolean isDebug = true;
+    private static boolean isDebug = true;
 
     private static Level currentLevel = Level.VERBOSE;
 
     private static String defaultTag = "HY";
 
-    private static String pkgName;
+    private static String pkgName = "";
 
     private static int myPid;
 
@@ -79,9 +78,14 @@ public class Logger {
         }
     }
 
+    public static void setIsDebug(boolean isDebug) {
+        Logger.isDebug = isDebug;
+        Log.e(TAG,"debug 模式更新为 : " + isDebug);
+    }
 
     public static void setIsWriter(boolean isWriter) {
         Logger.isWriter = isWriter;
+        Log.e(TAG,"writer 模式更新为 : " + isWriter);
     }
 
     /**
@@ -165,8 +169,9 @@ public class Logger {
         if (currentLevel.value > Level.WARN.value) {
             return;
         }
-        if (isDebug)
+        if (isDebug) {
             Log.println(type, TAG, tag + " " + msg);
+        }
         if (isWriter && hasPermissions) {
             write(tag, msg, type);
         }
@@ -176,9 +181,9 @@ public class Logger {
         if (currentLevel.value > Level.WARN.value) {
             return;
         }
-
-        if (isDebug)
+        if (isDebug) {
             Log.println(type, TAG, tag + " " + msg + " " + Log.getStackTraceString(throwable));
+        }
         if (isWriter && hasPermissions) {
             write(tag, msg, type, throwable);
         }
