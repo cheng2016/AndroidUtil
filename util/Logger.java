@@ -67,6 +67,7 @@ public class Logger {
             Log.e(TAG, "很抱歉，没有读写权限，无法写入SD卡中");
             hasPermissions = false;
         }else {
+            Log.i(TAG, "拥有读写权限，可以写入SD卡中");
             hasPermissions = true;
         }
         pkgName = context.getPackageName();
