@@ -64,7 +64,7 @@ public class PermissionHelper {
         if (!hasPermissions(mContext, permissions)) {
 
             //需要向用户解释为什么申请这个权限
-            boolean shouldShowRationale = false;
+/*            boolean shouldShowRationale = false;
             for (String perm : permissions) {
                 shouldShowRationale =
                         shouldShowRationale || shouldShowRequestPermissionRationale(mContext, perm);
@@ -74,15 +74,14 @@ public class PermissionHelper {
                 showMessageOKCancel(hintMessage, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        executePermissionsRequest(mContext, permissions,
-                                REQUEST_PERMISSION_CODE);
-
+                        executePermissionsRequest(mContext, permissions, REQUEST_PERMISSION_CODE);
                     }
                 });
             } else {
-                executePermissionsRequest(mContext, permissions,
-                        REQUEST_PERMISSION_CODE);
-            }
+                executePermissionsRequest(mContext, permissions, REQUEST_PERMISSION_CODE);
+            }*/
+            
+            executePermissionsRequest(mContext, permissions, REQUEST_PERMISSION_CODE);
         } else if (mListener != null) { //有全部权限
             mListener.doAfterGrand(permissions);
         }
