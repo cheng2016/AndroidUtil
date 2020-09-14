@@ -19,7 +19,6 @@ android 私人工具类集合
 ## [PermissionHelper](util/PermissionHelper.java) 
 
 权限申请统一处理类
-
 ```
 PermissionHelper mHelper = new PermissionHelper(this);
 mHelper.requestPermissions("请授予[录音]，[读写]权限，否则无法录音",
@@ -34,7 +33,16 @@ mHelper.requestPermissions("请授予[录音]，[读写]权限，否则无法录
                     }
                 }, Manifest.permission.RECORD_AUDIO,Manifest.permission.WRITE_EXTERNAL_STORAGE);
 ```
-
+权限回调方法必须处理，否则会导致不断拉取权限的问题
+```
+@Override
+public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    if (mHelper != null) {
+        mHelper.handleRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+}
+```
 
 ## [OkHttpUtil](util/OkHttpUtil.java)
 
