@@ -191,7 +191,7 @@ xml文件读取、写入工具类
     getFileFromAssets
     getFileFromRaw
 
-##### Android之网络图片加载并实现线程切换一套解决方案：
+#### Android之网络图片加载并实现线程切换一套解决方案：
 
     public static void getImageBitmap(Context context,final ImageView imageView, final String url) {
         final Handler handler = new Handler(context.getMainLooper()){
