@@ -191,6 +191,42 @@ xml文件读取、写入工具类
     getFileFromAssets
     getFileFromRaw
 
+##### Android之网络图片加载并实现线程切换一套解决方案：
+
+    public static void getImageBitmap(Context context,final ImageView imageView, final String url) {
+        final Handler handler = new Handler(context.getMainLooper()){
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                Bitmap bit = (Bitmap) msg.obj;
+                if(bit != null)
+                    imageView.setImageBitmap(bit);
+            }
+        };
+        Executors.newSingleThreadExecutor().execute(new Runnable() {
+            @Override
+            public void run() {
+                URL imgUrl = null;
+                Bitmap bitmap = null;
+                try {
+                    imgUrl = new URL(url);
+                    HttpURLConnection conn = (HttpURLConnection) imgUrl
+                            .openConnection();
+                    conn.setDoInput(true);
+                    conn.connect();
+                    InputStream is = conn.getInputStream();
+                    bitmap = BitmapFactory.decodeStream(is);
+                    is.close();
+                    handler.sendMessage(handler.obtainMessage(0,bitmap));
+                } catch (MalformedURLException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
 
 
 ## Contact Me
