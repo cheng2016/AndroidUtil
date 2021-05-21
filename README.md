@@ -79,6 +79,23 @@ public void onRequestPermissionsResult(int requestCode, @NonNull String[] permis
             });
 
 
+## [HttpClientUtils](util/HttpClientUtils.java)
+
+一个简易根据android自带HttpURLConnection库的工具类。代码有一定参考性。
+
+        HttpClientUtils.post(url, map, new HttpClientUtils.SimpleResponseCallback() {
+            @Override
+            public void onSuccess(String response) {
+                Log.i(TAG," onSuccess response : " + response);
+            }
+
+            @Override
+            public void onFailure(Exception error) {
+                Log.i(TAG," onFailure error : " + error.getMessage());
+            }
+        });
+
+
 ## [CrashHandler](util/CrashHandler.java)
 
 一个app崩溃日志收集类，把App崩溃日志写入SD卡中。
