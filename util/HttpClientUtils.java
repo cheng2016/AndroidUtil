@@ -23,7 +23,7 @@ import java.util.concurrent.Executors;
 public class HttpClientUtils {
     public static final String TAG = HttpClientUtils.class.getSimpleName();
 
-    public static void post(final String actionUrl, final Map<String, String> params,final ResponseCallback callback)  {
+    public static void post(final String actionUrl, final Map<String, String> params,final Callback callback)  {
         HyLog.i(TAG," Url : " + actionUrl);
         Executors.newSingleThreadExecutor().execute(new Runnable() {
             @Override
@@ -71,18 +71,18 @@ public class HttpClientUtils {
                             in.close();
                             result = sb2.toString();
 //                            HyLog.i(TAG," result : " + result);
-                            callback.sendSuccessMessage(result);
+                            callback.onSuccess(result);
                             break;
                         case 403:
-                            callback.sendFailuerMessage(new IOException(res + " : request forbided"));
+                            callback.onFailure(new IOException(res + " : request forbided"));
                         case 404:
-                            callback.sendFailuerMessage(new IOException(res + " : not fonud such address"));
+                            callback.onFailure(new IOException(res + " : not fonud such address"));
                         default:
-                            callback.sendFailuerMessage(new IOException(res + " : undefine error"));
+                            callback.onFailure(new IOException(res + " : undefine error"));
                     }
                 }catch (IOException exception){
                     exception.printStackTrace();
-                    callback.sendFailuerMessage(exception);
+                    callback.onFailure(exception);
                 }
             }
         });
@@ -252,16 +252,6 @@ public class HttpClientUtils {
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             responseHandler.handleMessage(msg);
-        }
-    }
-
-    public static abstract class ResponseCallback implements Callback{
-        void sendSuccessMessage(String result) {
-            onSuccess(result);
-        }
-
-        void sendFailuerMessage(Throwable throwable) {
-            onFailure((Exception) throwable);
         }
     }
 
