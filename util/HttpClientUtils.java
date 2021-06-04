@@ -70,18 +70,19 @@ public class HttpClientUtils {
                             }
                             in.close();
                             result = sb2.toString();
-                            callback.onSuccess(result);
+//                            HyLog.i(TAG," result : " + result);
+                            callback.sendSuccessMessage(result);
                             break;
                         case 403:
-                            callback.onFailure(new IOException(res + " : request forbided"));
+                            callback.sendFailuerMessage(new IOException(res + " : request forbided"));
                         case 404:
-                            callback.onFailure(new IOException(res + " : not fonud such address"));
+                            callback.sendFailuerMessage(new IOException(res + " : not fonud such address"));
                         default:
-                            callback.onFailure(new IOException(res + " : undefine error"));
+                            callback.sendFailuerMessage(new IOException(res + " : undefine error"));
                     }
                 }catch (IOException exception){
                     exception.printStackTrace();
-                    callback.onFailure(exception);
+                    callback.sendFailuerMessage(exception);
                 }
             }
         });
@@ -204,9 +205,7 @@ public class HttpClientUtils {
         return result;
     }
 
-
-
-    public abstract static class SimpleResponseCallback  {
+    public abstract static class SimpleResponseCallback  implements Callback{
         private Handler handler;
 
         public SimpleResponseCallback() {
@@ -239,9 +238,6 @@ public class HttpClientUtils {
         Message obtainMessage(int responseMessageId, Object responseMessageData) {
             return Message.obtain(this.handler, responseMessageId, responseMessageData);
         }
-
-        public abstract void onSuccess(String response);
-        public abstract void onFailure(Exception error);
     }
 
     private static class ResultHandler extends Handler {
@@ -259,8 +255,18 @@ public class HttpClientUtils {
         }
     }
 
-    public interface ResponseCallback{
-        public abstract void onSuccess(String response);
-        public abstract void onFailure(Exception error);
+    public static abstract class ResponseCallback implements Callback{
+        void sendSuccessMessage(String result) {
+            onSuccess(result);
+        }
+
+        void sendFailuerMessage(Throwable throwable) {
+            onFailure((Exception) throwable);
+        }
+    }
+
+    public interface Callback{
+        void onSuccess(String response);
+        void onFailure(Exception error);
     }
 }
