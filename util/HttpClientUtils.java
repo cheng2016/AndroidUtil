@@ -23,7 +23,8 @@ import java.util.concurrent.Executors;
 public class HttpClientUtils {
     public static final String TAG = HttpClientUtils.class.getSimpleName();
 
-    public static void post(final String actionUrl, final Map<String, String> params,final SimpleResponseCallback callback)  {
+    public static void post(final String actionUrl, final Map<String, String> params,final ResponseCallback callback)  {
+        HyLog.i(TAG," Url : " + actionUrl);
         Executors.newSingleThreadExecutor().execute(new Runnable() {
             @Override
             public void run() {
@@ -32,8 +33,8 @@ public class HttpClientUtils {
                     String contentType = "application/x-www-form-urlencoded";
                     URL uri = new URL(actionUrl);
                     HttpURLConnection conn = (HttpURLConnection) uri.openConnection();
-                    conn.setReadTimeout(5 * 1000); // Cache max time
-                    conn.setConnectTimeout(5 * 1000);
+                    conn.setReadTimeout(6 * 1000); // Cache max time
+                    conn.setConnectTimeout(6 * 1000);
                     conn.setDoInput(true);// allow input
                     conn.setDoOutput(true);// Allow output
                     conn.setUseCaches(false); // cache is disable
@@ -51,6 +52,71 @@ public class HttpClientUtils {
                         sb.append("=");
                         sb.append(URLEncoder.encode(entry.getValue()));
                     }
+                    HyLog.i(TAG," params : " + sb.toString());
+                    OutputStream output = conn.getOutputStream();
+                    output.write(sb.toString().getBytes());
+                    output.flush();
+
+                    int res = conn.getResponseCode();
+                    InputStream in = null;
+                    switch (res) {
+                        case 200:
+                            in = conn.getInputStream();
+                            String line;
+                            StringBuilder sb2 = new StringBuilder();
+                            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
+                            while ((line = bufferedReader.readLine()) != null) {
+                                sb2.append(line);
+                            }
+                            in.close();
+                            result = sb2.toString();
+                            callback.onSuccess(result);
+                            break;
+                        case 403:
+                            callback.onFailure(new IOException(res + " : request forbided"));
+                        case 404:
+                            callback.onFailure(new IOException(res + " : not fonud such address"));
+                        default:
+                            callback.onFailure(new IOException(res + " : undefine error"));
+                    }
+                }catch (IOException exception){
+                    exception.printStackTrace();
+                    callback.onFailure(exception);
+                }
+            }
+        });
+    }
+
+    public static void post(final String actionUrl, final Map<String, String> params,final SimpleResponseCallback callback)  {
+        HyLog.i(TAG," Url : " + actionUrl);
+        Executors.newSingleThreadExecutor().execute(new Runnable() {
+            @Override
+            public void run() {
+                String result = null;
+                try {
+                    String contentType = "application/x-www-form-urlencoded";
+                    URL uri = new URL(actionUrl);
+                    HttpURLConnection conn = (HttpURLConnection) uri.openConnection();
+                    conn.setReadTimeout(6 * 1000); // Cache max time
+                    conn.setConnectTimeout(6 * 1000);
+                    conn.setDoInput(true);// allow input
+                    conn.setDoOutput(true);// Allow output
+                    conn.setUseCaches(false); // cache is disable
+                    conn.setRequestMethod("POST");
+                    conn.setRequestProperty("connection", "keep-alive");
+                    conn.setRequestProperty("Charsert", "UTF-8");
+                    conn.setRequestProperty("Content-Type", contentType);
+                    StringBuilder sb = new StringBuilder();
+
+                    for (Map.Entry<String, String> entry : params.entrySet()) {
+                        if (sb.length() > 0) {
+                            sb.append("&");
+                        }
+                        sb.append(entry.getKey());
+                        sb.append("=");
+                        sb.append(URLEncoder.encode(entry.getValue()));
+                    }
+                    HyLog.i(TAG," params : " + sb.toString());
                     OutputStream output = conn.getOutputStream();
                     output.write(sb.toString().getBytes());
                     output.flush();
@@ -191,5 +257,10 @@ public class HttpClientUtils {
             super.handleMessage(msg);
             responseHandler.handleMessage(msg);
         }
+    }
+
+    public interface ResponseCallback{
+        public abstract void onSuccess(String response);
+        public abstract void onFailure(Exception error);
     }
 }
