@@ -7,11 +7,18 @@ android 私人工具类集合
 
 ## [Logger](util/Logger.java)
 
-文件日志类，任何高频读写情况下都能保证文件日志写入的稳定性，一次初始化终身使用
+文件日志类，任何高频读写情况下都能保证文件日志写入的稳定性，无须初始化随点随用
 
-    //必须先在Application中初始化文件日志类
-    Logger.init(context);
+   设置是否打印日志
+
+    Logger.setIsDebug(mActivity,false);
     
+   设置是否写入文件日志
+   
+    Logger.setIsWriter(mActivity,true);
+    
+   平常使用：
+   
     Logger.i(TAG,"this is a logger message");
  
     Logger.e(TAG,"this is a error message",error);
