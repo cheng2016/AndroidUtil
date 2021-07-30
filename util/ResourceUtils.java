@@ -139,6 +139,82 @@ public class ResourceUtils {
         }
         return null;
     }
+	
+	
+    public static int getLayoutId(Context paramActivity, String id) {
+        String packageName = paramActivity.getPackageName();
+        return paramActivity.getResources().getIdentifier(id, "layout",
+                packageName);
+    }
+
+    public static int getId(Context paramActivity, String id) {
+        String packageName = paramActivity.getPackageName();
+        return paramActivity.getResources()
+                .getIdentifier(id, "id", packageName);
+    }
+
+    public static int getColorId(Context paramActivity, String id) {
+        String packageName = paramActivity.getPackageName();
+        return paramActivity.getResources()
+                .getIdentifier(id, "color", packageName);
+    }
+
+    public static int getDrawableId(Context paramActivity, String id) {
+        String packageName = paramActivity.getPackageName();
+        return paramActivity.getResources()
+                .getIdentifier(id, "drawable", packageName);
+    }
+
+    public static int getStyleId(Context paramActivity, String id) {
+        String packageName = paramActivity.getPackageName();
+        return paramActivity.getResources().getIdentifier(id, "style",
+                packageName);
+    }
+
+    public static String getStringId(Context paramActivity, String id) {
+        String packageName = paramActivity.getPackageName();
+        return paramActivity.getResources().getString(paramActivity.getResources().getIdentifier(id, "string",
+                packageName));
+    }
+
+    public static int getAttrId(Context paramActivity, String id) {
+        String packageName = paramActivity.getPackageName();
+        return paramActivity.getResources().getIdentifier(id, "attrs", packageName);
+    }
+
+
+    public static int[] getAttrArrayId(Context paramActivity, String id) {
+        String packageName = paramActivity.getPackageName();
+        int attrs = paramActivity.getResources().getIdentifier(id, "attrs", packageName);
+        return new int[]{attrs};
+    }
+
+    public static int getStyleableId(Context context, String resourceName) {
+        return getIdentifierByType(context, resourceName, "styleable");
+    }
+
+
+    public static int getAnimId(Context context, String resourceName) {
+        return getIdentifierByType(context, resourceName, "anim");
+    }
+
+    public static int getArrayId(Context context, String resourceName) {
+        return getIdentifierByType(context, resourceName, "array");
+    }
+
+    public static int getIntegerId(Context context, String resourceName) {
+        return getIdentifierByType(context, resourceName, "integer");
+    }
+
+    public static int getBoolId(Context context, String resourceName) {
+        return getIdentifierByType(context, resourceName, "bool");
+    }
+
+    private static int getIdentifierByType(Context context, String resourceName, String defType) {
+        return context.getResources().getIdentifier(resourceName,
+                defType,
+                context.getPackageName());
+    }
 
 }
     
