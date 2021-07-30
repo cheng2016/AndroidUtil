@@ -42,8 +42,6 @@ public class Logger {
 
     private static final ExecutorService EXECUTOR_SERVICE = Executors.newSingleThreadExecutor();
 
-    private static boolean isInit = false;
-
     private static boolean hasPermissions = false;
 
     private static boolean isWriter = true;
