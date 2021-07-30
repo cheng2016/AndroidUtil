@@ -33,6 +33,10 @@ public class Logger {
     public static final int W = Log.WARN;
     public static final int E = Log.ERROR;
     public static final int A = Log.ASSERT;
+    
+    private static final String defaultTag = "HY";
+
+    private static final Level currentLevel = Level.VERBOSE;
 
     private static final DateFormat LOG_TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -47,11 +51,7 @@ public class Logger {
     private static boolean isWriter = false;
 
     private static boolean isDebug = true;
-
-    private static Level currentLevel = Level.VERBOSE;
-
-    private static String defaultTag = "HY";
-
+    
     private static String pkgName = "";
 
     private static int myPid;
