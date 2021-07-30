@@ -3,6 +3,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Environment;
 import android.os.Process;
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.io.BufferedWriter;
@@ -41,6 +42,8 @@ public class Logger {
 
     private static final ExecutorService EXECUTOR_SERVICE = Executors.newSingleThreadExecutor();
 
+    private static boolean isInit = false;
+
     private static boolean hasPermissions = false;
 
     private static boolean isWriter = true;
@@ -63,30 +66,47 @@ public class Logger {
      * @param context
      */
     public static void init(Context context) {
-        if (lacksPermissions(context, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            Log.e(TAG, "很抱歉，没有读写权限，无法写入SD卡中");
-            hasPermissions = false;
-        }else {
-            Log.i(TAG, "拥有读写权限，可以写入SD卡中");
-            hasPermissions = true;
-        }
+        if (!TextUtils.isEmpty(pkgName) && !TextUtils.isEmpty(defaultDir)) return;
+        getPermissions(context);
         pkgName = context.getPackageName();
         myPid = Process.myPid();
         if (isSDCardOK()) {
-            defaultDir = Environment.getExternalStorageDirectory() + File.separator + pkgName + File.separator + "logger" + File.separator;
+            defaultDir = Environment.getExternalStorageDirectory() + File.separator + TAG + File.separator + (TextUtils.isEmpty(pkgName) ? TAG : pkgName) + File.separator;
         } else {
-            defaultDir = context.getCacheDir().getAbsolutePath() + File.separator + pkgName + File.separator + "logger" + File.separator;
+            defaultDir = context.getCacheDir().getAbsolutePath() + File.separator + TAG + File.separator + (TextUtils.isEmpty(pkgName) ? TAG : pkgName) + File.separator;
         }
     }
 
-    public static void setIsDebug(boolean isDebug) {
-        Logger.isDebug = isDebug;
-        Log.e(TAG,"debug 模式更新为 : " + isDebug);
+    public static void getPermissions(Context context) {
+        if (lacksPermissions(context, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            Log.e(TAG, "很抱歉，没有读写权限，无法写入SD卡中");
+            hasPermissions = false;
+        } else {
+            Log.i(TAG, "拥有读写权限，可以写入SD卡中");
+            hasPermissions = true;
+        }
     }
 
-    public static void setIsWriter(boolean isWriter) {
+    //读写sd卡时的判断
+    public static boolean isSDCardOK() {
+        String sdStatus = Environment.getExternalStorageState();
+        if (!sdStatus.equals(Environment.MEDIA_MOUNTED)) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public static void setIsDebug(Context context, boolean isDebug) {
+        init(context);
+        Logger.isDebug = isDebug;
+        Log.e(TAG, "debug 模式更新为 : " + isDebug);
+    }
+
+    public static void setIsWriter(Context context, boolean isWriter) {
+        init(context);
         Logger.isWriter = isWriter;
-        Log.e(TAG,"writer 模式更新为 : " + isWriter);
+        Log.e(TAG, "writer 模式更新为 : " + isWriter);
     }
 
     /**
@@ -326,15 +346,6 @@ public class Logger {
         return file != null && (file.exists() ? file.isDirectory() : file.mkdirs());
     }
 
-    //读写sd卡时的判断
-    public static boolean isSDCardOK() {
-        String sdStatus = Environment.getExternalStorageState();
-        if (!sdStatus.equals(Environment.MEDIA_MOUNTED)) {
-            return false;
-        } else {
-            return true;
-        }
-    }
 
     public static void main(String[] args) {
         String timeStamp = LOG_TIME_FORMAT.format(new Date());
