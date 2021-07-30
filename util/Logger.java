@@ -44,7 +44,7 @@ public class Logger {
 
     private static boolean hasPermissions = false;
 
-    private static boolean isWriter = true;
+    private static boolean isWriter = false;
 
     private static boolean isDebug = true;
 
@@ -73,6 +73,7 @@ public class Logger {
         } else {
             defaultDir = context.getCacheDir().getAbsolutePath() + File.separator + TAG + File.separator + (TextUtils.isEmpty(pkgName) ? TAG : pkgName) + File.separator;
         }
+        Log.d(TAG, "日志类初始化成功");
     }
 
     public static void getPermissions(Context context) {
