@@ -180,7 +180,7 @@ xml文件读取、写入工具类
         }
 
  
- 读取xml键值对：
+ xml键值对：
  
        <?xml version = "1.0" encoding="UTF-8"?>
       <switch>
@@ -189,7 +189,7 @@ xml文件读取、写入工具类
           <config key = "sex" value="946396728" />
       </switch>
  
- 读取代码
+ 读取xml键值对代码：
  
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
