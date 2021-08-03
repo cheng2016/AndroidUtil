@@ -170,4 +170,51 @@ public class XmlUtils {
             return true;
         }
     }
+    
+    
+    
+  // 存储xml中的键值对
+    private static HashMap<String, String> confMap;
+
+    // 读取配置文件并读入至hashmap中
+    private static void initReadConfig(Context context, String xmlFileName) {
+        try {
+            //创建Android的factory实例
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            //创建builder实例
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            //将字节输入流解析为Document对象
+            Document document = builder.parse(context.getAssets().open(TextUtils.isEmpty(xmlFileName) ? "topon.xml" : xmlFileName));
+            //取得文档的根节点元素及其内容,即:<languages>内容</languages>
+            Element root = document.getDocumentElement();
+            //根据标签名取得相应的元素节点及其内容，由于标签可能不止一个，返回一个节点列表对象
+            NodeList nodeList = root.getElementsByTagName("config");
+            int confNum = nodeList.getLength();
+            confMap = new HashMap<>();
+            for (int i = 0; i < confNum; i++) {
+                Element ele = (Element) nodeList.item(i);
+                if (!ele.getAttribute("key").equals("")) {
+                    confMap.put(ele.getAttribute("key"),
+                            ele.getAttribute("value"));
+                }
+                Log.i(TAG, " key : " + ele.getAttribute("key") + " , value : " + ele.getAttribute("value"));
+            }
+        } catch (Exception e) {
+            System.out.println("init topon.xml failure!");
+        }
+    }
+
+    // 通过类中的该方法获取hashmap中的值
+    public static String getConfigValue(String key, String defaultValue) {
+        Log.i(TAG, "getConfigValue key : " + key + " , defaultValue : " + defaultValue);
+        if (confMap == null) {
+            return defaultValue;
+        } else {
+            String result = confMap.get(key);
+            if (result != null && !result.equals("")) {
+                return result;
+            }
+        }
+        return defaultValue;
+    }
 }
