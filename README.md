@@ -179,6 +179,41 @@ xml文件读取、写入工具类
             return token;
         }
 
+ 
+ 读取xml键值对：
+ 
+       <?xml version = "1.0" encoding="UTF-8"?>
+      <switch>
+          <config key = "name" value="946396450" />
+          <config key = "age" value="946396469" />
+          <config key = "sex" value="946396728" />
+      </switch>
+ 
+ 读取代码
+ 
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            //将字节输入流解析为Document对象
+            Document document = builder.parse(context.getAssets().open(xmlFileName));
+            //取得文档的根节点元素及其内容,即:<languages>内容</languages>
+            Element root = document.getDocumentElement();
+            //根据标签名取得相应的元素节点及其内容，由于标签可能不止一个，返回一个节点列表对象
+            NodeList nodeList = root.getElementsByTagName("config");
+            int confNum = nodeList.getLength();
+            confMap = new HashMap<String, String>();
+            for (int i = 0; i < confNum; i++) {
+                Element ele = (Element) nodeList.item(i);
+                if (!ele.getAttribute("key").equals("")) {
+                    confMap.put(ele.getAttribute("key"),
+                            ele.getAttribute("value"));
+                }
+                Log.i(TAG," key : " + ele.getAttribute("key") +" , value : " + ele.getAttribute("value"));
+            }
+        } catch (Exception e) {
+            System.out.println("init topon.xml failure!");
+        }
+ 
+
 ## [RegexUtils](util/RegexUtils.java)
 
 一个正则工具类
