@@ -32,7 +32,7 @@ public class HttpClientUtils {
                 String result = null;
                 try {
                     URL uri = new URL(actionUrl);
-                    HttpURLConnection conn = getPostHttpURLConnection(uri);
+                    HttpURLConnection conn = getHttpURLConnection(uri,"POST");
                     StringBuilder sb = getPostStringBuilder(params);
                     OutputStream output = conn.getOutputStream();
                     output.write(sb.toString().getBytes());
@@ -69,7 +69,7 @@ public class HttpClientUtils {
                 String result = null;
                 try {
                     URL uri = new URL(actionUrl);
-                    HttpURLConnection conn = getPostHttpURLConnection(uri);
+                    HttpURLConnection conn = getHttpURLConnection(uri,"POST");
                     StringBuilder sb = getPostStringBuilder(params);
                     OutputStream output = conn.getOutputStream();
                     output.write(sb.toString().getBytes());
@@ -101,21 +101,12 @@ public class HttpClientUtils {
         Executors.newCachedThreadPool().execute(new Runnable() {
             @Override
             public void run() {
+                String result;
                 try {
-                    String contentType = "application/x-www-form-urlencoded";
                     URL uri = new URL(getRequestUrl(actionUrl, params));
-                    HttpURLConnection conn = (HttpURLConnection) uri.openConnection();
-                    conn.setReadTimeout(5 * 1000); // Cache max time
-                    conn.setDoInput(true);// allow input
-                    conn.setDoOutput(true);// Allow output
-                    conn.setUseCaches(false); // cache is disable
-                    conn.setRequestMethod("GET");
-                    conn.setRequestProperty("connection", "keep-alive");
-                    conn.setRequestProperty("Charsert", "UTF-8");
-                    conn.setRequestProperty("Content-Type", contentType);
+                    HttpURLConnection conn = getHttpURLConnection(uri,"GET");
                     int res = conn.getResponseCode();
                     InputStream in = null;
-                    String result = null;
                     switch (res) {
                         case 200:
                             result = executeData(conn, in);
@@ -133,6 +124,21 @@ public class HttpClientUtils {
                 }
             }
         });
+    }
+    
+    public static HttpURLConnection getHttpURLConnection(URL uri, String methodType) throws Exception {
+        String contentType = "application/x-www-form-urlencoded";
+        HttpURLConnection conn = (HttpURLConnection) uri.openConnection();
+        conn.setReadTimeout(6 * 1000); // Cache max time
+        conn.setConnectTimeout(6 * 1000);
+        conn.setDoInput(true);// allow input
+        conn.setDoOutput(true);// Allow output
+        conn.setUseCaches(false); // cache is disable
+        conn.setRequestMethod(methodType);
+        conn.setRequestProperty("connection", "keep-alive");
+        conn.setRequestProperty("Charsert", "UTF-8");
+        conn.setRequestProperty("Content-Type", contentType);
+        return conn;
     }
 
     public static String executeData(HttpURLConnection conn, InputStream in) throws Exception {
