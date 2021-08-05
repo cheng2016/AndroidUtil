@@ -208,6 +208,21 @@ public class HttpClientUtils {
         HyLog.d(TAG, "post params : " + sb.toString());
         return sb;
     }
+    
+    private static class ResultHandler extends Handler {
+        SimpleResponseCallback responseHandler;
+
+        ResultHandler(SimpleResponseCallback handler, Looper looper) {
+            super(looper);
+            this.responseHandler = handler;
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            responseHandler.handleMessage(msg);
+        }
+    }
 
     public abstract static class SimpleResponseCallback implements Callback {
         private Handler handler;
@@ -244,20 +259,6 @@ public class HttpClientUtils {
         }
     }
 
-    private static class ResultHandler extends Handler {
-        SimpleResponseCallback responseHandler;
-
-        ResultHandler(SimpleResponseCallback handler, Looper looper) {
-            super(looper);
-            this.responseHandler = handler;
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            responseHandler.handleMessage(msg);
-        }
-    }
 
     public interface Callback {
         void onSuccess(String responseJson);
