@@ -31,7 +31,7 @@ import android.os.Looper;
 
 /**
  * @ClassName ImageUtils
- * @Description 二级缓存的图片加载库，使用于小场面
+ * @Description  三级缓存的图片加载库，代码短效精悍，使用于代码低耦合的sdk场景
  * @Author chengzj
  * @Date 2021/8/10 9:55
  */
