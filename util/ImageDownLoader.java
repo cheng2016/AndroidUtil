@@ -1,13 +1,19 @@
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Process;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.LruCache;
 import android.widget.ImageView;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -45,13 +51,12 @@ public class ImageDownLoader {
     }
 
     private ImageDownLoader(Context paramContext) {
-        if (paramContext == null)
-            return;
-        mMemoryCache = new ImageCache();
+        if (paramContext == null) return;
+        mMemoryCache = new ImageCache(paramContext);
     }
 
     private void downloadImage(final ImageView imageView, final String url) {
-        Log.d(TAG,"网络加载：" + url);
+        Log.d(TAG, "网络加载：" + url);
         final Handler handler = new Handler(Looper.getMainLooper()) {
             @Override
             public void handleMessage(Message msg) {
@@ -76,6 +81,7 @@ public class ImageDownLoader {
                     bitmap = BitmapFactory.decodeStream(is);
                     is.close();
                     addBitmapToMemoryCache(url, bitmap);
+                    mMemoryCache.putDiskCache(bitmap, url);
                     handler.sendMessage(handler.obtainMessage(0, bitmap));
                 } catch (MalformedURLException e) {
                     // TODO Auto-generated catch block
@@ -111,12 +117,92 @@ public class ImageDownLoader {
         if (TextUtils.isEmpty(url)) return;
         Bitmap bitmap = getBitmapFromMemCache(url);
         if (bitmap != null) {
-            Log.d(TAG,"缓存加载：" + url);
+            Log.d(TAG, "缓存加载：" + url);
+            imageView.setImageBitmap(bitmap);
+            return;
+        }
+
+        bitmap = mMemoryCache.getDiskCache(url);
+        if (bitmap != null) {
+            Log.d(TAG, "磁盘加载：" + url);
+            addBitmapToMemoryCache(url, bitmap);
             imageView.setImageBitmap(bitmap);
             return;
         }
         downloadImage(imageView, url);
     }
+
+    public class ImageCache extends LruCache<String, Bitmap> {
+        private Map<String, SoftReference<Bitmap>> cacheMap;
+        private String diskpath;
+        private boolean hasPermissions = false;
+
+        public ImageCache() {
+            super((int) (Runtime.getRuntime().maxMemory() / 10));
+            cacheMap = new HashMap<>();
+        }
+
+        public ImageCache(Context context) {
+            this();
+            if (!lacksPermissions(context, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                hasPermissions = true;
+                Log.e(TAG, "拥有读写权限 可以进行磁盘缓存 hasPermissions is true");
+            }
+            diskpath = getDiskCacheDir(context, "bitmap");
+        }
+
+
+        @Override
+        protected int sizeOf(String key, Bitmap value) {
+            return value.getRowBytes() * value.getHeight();
+        }
+
+        @Override
+        protected void entryRemoved(boolean evicted, String key, Bitmap oldValue, Bitmap newValue) {
+            if (oldValue != null) {
+                SoftReference<Bitmap> softReference = new SoftReference<Bitmap>(oldValue);
+                cacheMap.put(key, softReference);
+            }
+        }
+
+        public Map<String, SoftReference<Bitmap>> getCacheMap() {
+            return cacheMap;
+        }
+
+        private void putDiskCache(Bitmap paramBitmap, String paramString) {
+            if (getDiskCache(paramString) != null || !hasPermissions) return;
+            try {
+                if (paramString.endsWith(".jpg")) {
+                    paramString = diskpath + File.separator + md5(paramString) + ".jpg";
+                } else if (paramString.endsWith(".png")) {
+                    paramString = diskpath + File.separator + md5(paramString) + "png";
+                }
+                File file = new File(paramString);
+                file.createNewFile();
+                FileOutputStream fileOutputStream = new FileOutputStream(file);
+                paramBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
+                fileOutputStream.flush();
+                fileOutputStream.close();
+                Log.i(TAG, "写入磁盘中 " + paramString);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        private Bitmap getDiskCache(String paramString) {
+            if (!hasPermissions) return null;
+            if (paramString.endsWith(".jpg")) {
+                paramString = diskpath + File.separator + md5(paramString) + ".jpg";
+            } else if (paramString.endsWith(".png")) {
+                paramString = diskpath + File.separator + md5(paramString) + "png";
+            }
+            if (new File(paramString).exists()) {
+                return BitmapFactory.decodeFile(paramString);
+            }
+            return null;
+        }
+    }
+
 
     private String md5(String content) {
         byte[] hash;
@@ -135,29 +221,37 @@ public class ImageDownLoader {
         return hex.toString();
     }
 
-    public class ImageCache extends LruCache<String, Bitmap> {
-        private Map<String, SoftReference<Bitmap>> cacheMap;
-
-        public ImageCache() {
-            super((int) (Runtime.getRuntime().maxMemory() / 10));
-            cacheMap = new HashMap<>();
+    public String getDiskCacheDir(Context context, String uniqueName) {
+        String cachePath;
+        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())
+                || !Environment.isExternalStorageRemovable()) {
+            cachePath = Environment.getExternalStorageDirectory() + File.separator + context.getPackageName();
+        } else {
+            cachePath = context.getCacheDir().getPath();
         }
+        Log.d(TAG, "磁盘图片缓存目录 " + cachePath + File.separator + uniqueName);
+        return cachePath + File.separator + uniqueName;
+    }
 
-        @Override
-        protected int sizeOf(String key, Bitmap value) {
-            return value.getRowBytes() * value.getHeight();
-        }
-
-        @Override
-        protected void entryRemoved(boolean evicted, String key, Bitmap oldValue, Bitmap newValue) {
-            if (oldValue != null) {
-                SoftReference<Bitmap> softReference = new SoftReference<Bitmap>(oldValue);
-                cacheMap.put(key, softReference);
+    // return true-表示没有权限  false-表示权限已开启
+    public static boolean lacksPermissions(Context mContexts, String... args) {
+        for (String permission : args) {
+            if (lacksPermission(mContexts, permission)) {
+                return true;
             }
         }
+        return false;
+    }
 
-        public Map<String, SoftReference<Bitmap>> getCacheMap() {
-            return cacheMap;
+    private static boolean lacksPermission(Context context, String permission) {
+        return checkSelfPermission(context, permission) ==
+                PackageManager.PERMISSION_DENIED;
+    }
+
+    public static int checkSelfPermission(Context context, String permission) {
+        if (permission == null) {
+            throw new IllegalArgumentException("permission is null");
         }
+        return context.checkPermission(permission, android.os.Process.myPid(), Process.myUid());
     }
 }
