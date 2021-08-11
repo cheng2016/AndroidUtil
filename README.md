@@ -250,6 +250,13 @@ xml文件读取、写入工具类
     getFileFromAssets
     getFileFromRaw
 
+## [ImageDownLoader](util/ImageDownLoader.java)
+
+二级缓存的图片加载框架，适用于图片较少的场景，简单快捷，无需多余框架代码及可做到，简单好用
+
+      ImageDownLoader.getInstance(getActivity()).load(imageView,data.getAC_Url());
+
+
 #### Android之网络图片加载并实现线程切换一套解决方案：
 
     public static void getImageBitmap(Context context,final ImageView imageView, final String url) {
