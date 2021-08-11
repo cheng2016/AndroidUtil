@@ -61,7 +61,7 @@ public class ImageDownLoader {
                     imageView.setImageBitmap(bit);
             }
         };
-        Executors.newFixedThreadPool(2).execute(new Runnable() {
+        Executors.newSingleThreadExecutor().execute(new Runnable() {
             @Override
             public void run() {
                 Bitmap bitmap = null;
