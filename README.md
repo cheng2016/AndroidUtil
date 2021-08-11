@@ -252,7 +252,7 @@ xml文件读取、写入工具类
 
 ## [ImageDownLoader](util/ImageDownLoader.java)
 
-二级缓存的图片加载框架，适用于图片较少的场景，简单快捷，无需多余框架代码及可做到，简单好用
+手写的三级缓存的图片加载框架，适用于图片不多、代码耦合度低的sdk场景，简单快捷，无需多余框架代码及可做到，简单好用
 
       ImageDownLoader.getInstance(getActivity()).load(imageView,data.getAC_Url());
 
