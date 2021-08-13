@@ -26,12 +26,13 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executors;
+import java.util.concurrent.locks.Lock;
 
 import android.os.Looper;
 
 /**
  * @ClassName ImageUtils
- * @Description  三级缓存的图片加载库，代码短效精悍，使用于代码低耦合的sdk场景
+ * @Description 三级缓存的图片加载库，代码短效精悍，使用于代码低耦合的sdk场景
  * @Author chengzj
  * @Date 2021/8/10 9:55
  */
@@ -83,9 +84,6 @@ public class ImageDownLoader {
                     addBitmapToMemoryCache(url, bitmap);
                     mMemoryCache.putDiskCache(bitmap, url);
                     handler.sendMessage(handler.obtainMessage(0, bitmap));
-                } catch (MalformedURLException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -178,16 +176,18 @@ public class ImageDownLoader {
                     paramString = diskpath + File.separator + md5(paramString) + "png";
                 }
                 File file = new File(paramString);
-                file.createNewFile();
-                FileOutputStream fileOutputStream = new FileOutputStream(file);
-                paramBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
-                fileOutputStream.flush();
-                fileOutputStream.close();
-                Log.i(TAG, "写入磁盘中 " + paramString);
+                if (file.exists() ? file.createNewFile() : (file.getParentFile().exists() ? file.createNewFile() : file.getParentFile().mkdirs())){
+                    FileOutputStream fileOutputStream = new FileOutputStream(file);
+                    paramBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
+                    fileOutputStream.flush();
+                    fileOutputStream.close();
+                    Log.i(TAG, "写入磁盘中 " + paramString);
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+
 
         private Bitmap getDiskCache(String paramString) {
             if (!hasPermissions) return null;
@@ -221,7 +221,7 @@ public class ImageDownLoader {
         return hex.toString();
     }
 
-    public String getDiskCacheDir(Context context, String uniqueName) {
+    private String getDiskCacheDir(Context context, String uniqueName) {
         String cachePath;
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())
                 || !Environment.isExternalStorageRemovable()) {
@@ -234,7 +234,7 @@ public class ImageDownLoader {
     }
 
     // return true-表示没有权限  false-表示权限已开启
-    public static boolean lacksPermissions(Context mContexts, String... args) {
+    private static boolean lacksPermissions(Context mContexts, String... args) {
         for (String permission : args) {
             if (lacksPermission(mContexts, permission)) {
                 return true;
@@ -248,7 +248,7 @@ public class ImageDownLoader {
                 PackageManager.PERMISSION_DENIED;
     }
 
-    public static int checkSelfPermission(Context context, String permission) {
+    private static int checkSelfPermission(Context context, String permission) {
         if (permission == null) {
             throw new IllegalArgumentException("permission is null");
         }
