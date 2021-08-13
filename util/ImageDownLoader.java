@@ -175,7 +175,6 @@ public class ImageDownLoader {
                } else if (paramString.endsWith(".png")) {
                    paramString = diskpath + File.separator + md5(paramString) + "png";
                }
-                paramString = diskpath + File.separator + md5(paramString);
                 File file = new File(paramString);
                 if (file.exists() ? file.createNewFile() : (file.getParentFile().exists() ? file.createNewFile() : file.getParentFile().mkdirs())){
                     FileOutputStream fileOutputStream = new FileOutputStream(file);
