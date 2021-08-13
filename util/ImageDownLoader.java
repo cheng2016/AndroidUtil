@@ -45,7 +45,7 @@ public class ImageDownLoader {
     public static ImageDownLoader getInstance(Context paramContext) {
         if (instance == null) {
             synchronized (ImageDownLoader.class) {
-                instance = new ImageDownLoader(paramContext);
+                instance = new ImageDownLoader(paramContext.getApplicationContext());
             }
         }
         return instance;
@@ -53,7 +53,7 @@ public class ImageDownLoader {
 
     private ImageDownLoader(Context paramContext) {
         if (paramContext == null) return;
-        mMemoryCache = new ImageCache(paramContext.getApplicationContext());
+        mMemoryCache = new ImageCache(paramContext);
     }
 
     private void downloadImage(final ImageView imageView, final String url) {
