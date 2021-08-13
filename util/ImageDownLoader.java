@@ -167,7 +167,7 @@ public class ImageDownLoader {
             return cacheMap;
         }
 
-        private void putDiskCache(Bitmap paramBitmap, String paramString) {
+        public void putDiskCache(Bitmap paramBitmap, String paramString) {
             if (getDiskCache(paramString) != null || !hasPermissions) return;
             try {
                 if (paramString.endsWith(".jpg")) {
@@ -189,7 +189,7 @@ public class ImageDownLoader {
         }
 
 
-        private Bitmap getDiskCache(String paramString) {
+        public Bitmap getDiskCache(String paramString) {
             if (!hasPermissions) return null;
             if (paramString.endsWith(".jpg")) {
                 paramString = diskpath + File.separator + md5(paramString) + ".jpg";
