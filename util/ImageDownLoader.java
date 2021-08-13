@@ -203,8 +203,7 @@ public class ImageDownLoader {
         }
     }
 
-
-    private static String md5(String content) {
+    public static String md5(String content) {
         byte[] hash;
         try {
             hash = MessageDigest.getInstance("MD5").digest(content.getBytes("UTF-8"));
@@ -221,7 +220,7 @@ public class ImageDownLoader {
         return hex.toString();
     }
 
-    private static String getDiskCacheDir(Context context, String uniqueName) {
+    public static String getDiskCacheDir(Context context, String uniqueName) {
         String cachePath;
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())
                 || !Environment.isExternalStorageRemovable()) {
@@ -234,7 +233,7 @@ public class ImageDownLoader {
     }
 
     // return true-表示没有权限  false-表示权限已开启
-    private static boolean lacksPermissions(Context mContexts, String... args) {
+    public static boolean lacksPermissions(Context mContexts, String... args) {
         for (String permission : args) {
             if (lacksPermission(mContexts, permission)) {
                 return true;
