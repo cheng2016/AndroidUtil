@@ -53,7 +53,7 @@ public class ImageDownLoader {
 
     private ImageDownLoader(Context paramContext) {
         if (paramContext == null) return;
-        mMemoryCache = new ImageCache(paramContext);
+        mMemoryCache = new ImageCache(paramContext.getApplicationContext());
     }
 
     private void downloadImage(final ImageView imageView, final String url) {
@@ -130,17 +130,17 @@ public class ImageDownLoader {
         downloadImage(imageView, url);
     }
 
-    public class ImageCache extends LruCache<String, Bitmap> {
+    public static class ImageCache extends LruCache<String, Bitmap> {
         private Map<String, SoftReference<Bitmap>> cacheMap;
         private String diskpath;
         private boolean hasPermissions = false;
 
-        public ImageCache() {
+        ImageCache() {
             super((int) (Runtime.getRuntime().maxMemory() / 10));
             cacheMap = new HashMap<>();
         }
 
-        public ImageCache(Context context) {
+        ImageCache(Context context) {
             this();
             if (!lacksPermissions(context, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                 hasPermissions = true;
@@ -204,7 +204,7 @@ public class ImageDownLoader {
     }
 
 
-    private String md5(String content) {
+    private static String md5(String content) {
         byte[] hash;
         try {
             hash = MessageDigest.getInstance("MD5").digest(content.getBytes("UTF-8"));
@@ -221,7 +221,7 @@ public class ImageDownLoader {
         return hex.toString();
     }
 
-    private String getDiskCacheDir(Context context, String uniqueName) {
+    private static String getDiskCacheDir(Context context, String uniqueName) {
         String cachePath;
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())
                 || !Environment.isExternalStorageRemovable()) {
