@@ -33,7 +33,7 @@ public class Logger {
     public static final int W = Log.WARN;
     public static final int E = Log.ERROR;
     public static final int A = Log.ASSERT;
-    
+
     private static final String defaultTag = "HY";
 
     private static final Level currentLevel = Level.VERBOSE;
@@ -51,7 +51,7 @@ public class Logger {
     private static boolean isWriter = false;
 
     private static boolean isDebug = true;
-    
+
     private static String pkgName = "";
 
     private static int myPid;
@@ -69,9 +69,9 @@ public class Logger {
         pkgName = context.getPackageName();
         myPid = Process.myPid();
         if (isSDCardOK()) {
-            defaultDir = Environment.getExternalStorageDirectory() + File.separator + TAG + File.separator + (TextUtils.isEmpty(pkgName) ? TAG : pkgName) + File.separator;
+            defaultDir = Environment.getExternalStorageDirectory() + File.separator + pkgName + File.separator + TAG + File.separator;
         } else {
-            defaultDir = context.getCacheDir().getAbsolutePath() + File.separator + TAG + File.separator + (TextUtils.isEmpty(pkgName) ? TAG : pkgName) + File.separator;
+            defaultDir = context.getCacheDir().getAbsolutePath() + File.separator + pkgName + File.separator + TAG + File.separator;
         }
         Log.d(TAG, "日志类初始化成功");
     }
@@ -96,6 +96,10 @@ public class Logger {
         }
     }
 
+    public static boolean isDebug() {
+        return isDebug;
+    }
+
     public static void setIsDebug(Context context, boolean isDebug) {
         init(context);
         Logger.isDebug = isDebug;
@@ -107,6 +111,7 @@ public class Logger {
         Logger.isWriter = isWriter;
         Log.e(TAG, "writer 模式更新为 : " + isWriter);
     }
+
 
     /**
      * 日志级别
