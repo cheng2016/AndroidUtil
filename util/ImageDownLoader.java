@@ -253,4 +253,31 @@ public class ImageDownLoader {
         }
         return context.checkPermission(permission, android.os.Process.myPid(), Process.myUid());
     }
+    
+    
+    /**
+     * 对图片质量进行压缩
+     *
+     * @param bitmap
+     * @return
+     */
+    public static Bitmap compressImage(Bitmap bitmap) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        //质量压缩方法，这里100表示不压缩，把压缩后的数据存放到baos中
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        int options = 100;
+        if (baos.toByteArray().length / 1024 > 50) Log.i(TAG, "大于50kb执行压缩指令 ");
+        //循环判断如果压缩后图片是否大于50kb,大于继续压缩
+        while (baos.toByteArray().length / 1024 > 50) {
+            //清空baos
+            baos.reset();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, options, baos);
+            options -= 10;//每次都减少10
+        }
+        //把压缩后的数据baos存放到ByteArrayInputStream中
+        ByteArrayInputStream isBm = new ByteArrayInputStream(baos.toByteArray());
+        //把ByteArrayInputStream数据生成图片
+        Bitmap newBitmap = BitmapFactory.decodeStream(isBm, null, null);
+        return newBitmap;
+    }
 }
