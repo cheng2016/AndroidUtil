@@ -170,11 +170,11 @@ public class ImageDownLoader {
         public void putDiskCache(Bitmap paramBitmap, String paramString) {
             if (getDiskCache(paramString) != null || !hasPermissions) return;
             try {
-//                if (paramString.endsWith(".jpg")) {
-//                    paramString = diskpath + File.separator + md5(paramString) + ".jpg";
-//                } else if (paramString.endsWith(".png")) {
-//                    paramString = diskpath + File.separator + md5(paramString) + "png";
-//                }
+               if (paramString.endsWith(".jpg")) {
+                   paramString = diskpath + File.separator + md5(paramString) + ".jpg";
+               } else if (paramString.endsWith(".png")) {
+                   paramString = diskpath + File.separator + md5(paramString) + "png";
+               }
                 paramString = diskpath + File.separator + md5(paramString);
                 File file = new File(paramString);
                 if (file.exists() ? file.createNewFile() : (file.getParentFile().exists() ? file.createNewFile() : file.getParentFile().mkdirs())){
@@ -192,7 +192,11 @@ public class ImageDownLoader {
 
         public Bitmap getDiskCache(String paramString) {
             if (!hasPermissions) return null;
-            paramString = diskpath + File.separator + md5(paramString);
+           if (paramString.endsWith(".jpg")) {
+               paramString = diskpath + File.separator + md5(paramString) + ".jpg";
+           } else if (paramString.endsWith(".png")) {
+               paramString = diskpath + File.separator + md5(paramString) + "png";
+           }
             if (new File(paramString).exists()) {
                 return BitmapFactory.decodeFile(paramString);
             }
