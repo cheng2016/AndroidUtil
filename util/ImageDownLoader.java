@@ -115,7 +115,7 @@ public class ImageDownLoader {
         if (TextUtils.isEmpty(url)) return;
         Bitmap bitmap = getBitmapFromMemCache(url);
         if (bitmap != null) {
-            Log.d(TAG, "缓存加载：" + url);
+            Log.d(TAG, "内存加载：" + url);
             imageView.setImageBitmap(bitmap);
             return;
         }
