@@ -1,5 +1,3 @@
-package com.hy.gametools.utils;
-
 import android.Manifest;
 import android.app.Activity;
 import android.app.Application;
