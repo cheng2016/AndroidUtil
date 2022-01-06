@@ -1,9 +1,12 @@
+package com.hy.gametools.utils;
+
 import android.Manifest;
+import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Environment;
 import android.os.Process;
-import android.text.TextUtils;
 import android.util.Log;
 
 import java.io.BufferedWriter;
@@ -13,6 +16,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.lang.ref.WeakReference;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -58,41 +62,43 @@ public class Logger {
 
     private static String defaultDir;
 
+    private static WeakReference<Application> mContext;
+
     /**
      * application context
      *
      * @param context
      */
     public static void init(Context context) {
-        if (!TextUtils.isEmpty(pkgName) && !TextUtils.isEmpty(defaultDir)) return;
-        getPermissions(context);
-        pkgName = context.getPackageName();
+        if (context instanceof Application) {
+            mContext = new WeakReference<>((((Application) context)));
+        } else if (context instanceof Activity) {
+            mContext = new WeakReference<>(((Activity) context).getApplication());
+        }
         myPid = Process.myPid();
-        if (isSDCardOK()) {
+        pkgName = context.getPackageName();
+        initSDCardDir(context);
+        initPermissions(context);
+        Log.d(TAG, "日志类初始化成功");
+    }
+
+    public static void initSDCardDir(Context context) {
+        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             defaultDir = Environment.getExternalStorageDirectory() + File.separator + pkgName + File.separator + TAG + File.separator;
         } else {
             defaultDir = context.getCacheDir().getAbsolutePath() + File.separator + pkgName + File.separator + TAG + File.separator;
         }
-        Log.d(TAG, "日志类初始化成功");
     }
 
-    public static void getPermissions(Context context) {
+    public static void initPermissions(Context context) {
+        if (context == null || hasPermissions) return;
         if (lacksPermissions(context, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             Log.e(TAG, "很抱歉，没有读写权限，无法写入SD卡中");
             hasPermissions = false;
         } else {
             Log.i(TAG, "拥有读写权限，可以写入SD卡中");
             hasPermissions = true;
-        }
-    }
-
-    //读写sd卡时的判断
-    public static boolean isSDCardOK() {
-        String sdStatus = Environment.getExternalStorageState();
-        if (!sdStatus.equals(Environment.MEDIA_MOUNTED)) {
-            return false;
-        } else {
-            return true;
+            mContext.clear();
         }
     }
 
@@ -101,15 +107,15 @@ public class Logger {
     }
 
     public static void setIsDebug(Context context, boolean isDebug) {
+        Log.e(TAG, "debug 模式更新为 : " + isDebug);
         init(context);
         Logger.isDebug = isDebug;
-        Log.e(TAG, "debug 模式更新为 : " + isDebug);
     }
 
     public static void setIsWriter(Context context, boolean isWriter) {
+        Log.e(TAG, "writer 模式更新为 : " + isWriter);
         init(context);
         Logger.isWriter = isWriter;
-        Log.e(TAG, "writer 模式更新为 : " + isWriter);
     }
 
 
@@ -197,7 +203,7 @@ public class Logger {
         if (isDebug) {
             Log.println(type, TAG, tag + " " + msg);
         }
-        if (isWriter && hasPermissions) {
+        if (isWriter) {
             write(tag, msg, type);
         }
     }
@@ -209,7 +215,7 @@ public class Logger {
         if (isDebug) {
             Log.println(type, TAG, tag + " " + msg + " " + Log.getStackTraceString(throwable));
         }
-        if (isWriter && hasPermissions) {
+        if (isWriter) {
             write(tag, msg, type, throwable);
         }
     }
@@ -269,6 +275,7 @@ public class Logger {
     }
 
     private static void input2File(final String input, final String fullPath) {
+        initPermissions(mContext == null ? null : mContext.get());
         if (!createOrExistsFile(fullPath)) {
             Log.e("Logger", "create " + fullPath + " failed!");
             return;
@@ -316,8 +323,7 @@ public class Logger {
     private static boolean lacksPermission(Context context, String permission) {
 //         return ContextCompat.checkSelfPermission(context, permission) ==
 //                 PackageManager.PERMISSION_DENIED;
-        return checkSelfPermission(context, permission) ==
-                PackageManager.PERMISSION_DENIED;
+        return checkSelfPermission(context, permission) == PackageManager.PERMISSION_DENIED;
     }
 
     /**
@@ -331,7 +337,7 @@ public class Logger {
         if (permission == null) {
             throw new IllegalArgumentException("permission is null");
         }
-        return context.checkPermission(permission, android.os.Process.myPid(), Process.myUid());
+        return context.checkPermission(permission, Process.myPid(), Process.myUid());
     }
 
     private static boolean createOrExistsFile(String fullPath) {
