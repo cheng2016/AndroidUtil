@@ -1,12 +1,10 @@
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
-
-import com.huyu.sdk.view.LoadingBar;
-
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -269,4 +267,13 @@ public class OkHttpUtils {
             responseHandler.handleMessage(msg);
         }
     }
+
+
+
+    public class LoadingBar extends ProgressDialog {
+        public LoadingBar(Context context) {
+            super(context);
+        }
+    }
 }
+
