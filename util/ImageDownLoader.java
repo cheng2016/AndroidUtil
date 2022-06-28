@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.os.Process;
 import android.text.TextUtils;
@@ -12,6 +13,8 @@ import android.util.Log;
 import android.util.LruCache;
 import android.widget.ImageView;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -19,20 +22,16 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.ref.SoftReference;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executors;
-import java.util.concurrent.locks.Lock;
-
-import android.os.Looper;
 
 /**
- * @ClassName ImageUtils
- * @Description 三级缓存的图片加载库，代码短效精悍，使用于代码低耦合的sdk场景
+ * @ClassName ImageDownLoader
+ * @Description : 三级缓存框架，支持回调和异步操作
  * @Author chengzj
  * @Date 2021/8/10 9:55
  */
@@ -45,7 +44,7 @@ public class ImageDownLoader {
     public static ImageDownLoader getInstance(Context paramContext) {
         if (instance == null) {
             synchronized (ImageDownLoader.class) {
-                instance = new ImageDownLoader(paramContext.getApplicationContext());
+                instance = new ImageDownLoader(paramContext);
             }
         }
         return instance;
@@ -56,39 +55,76 @@ public class ImageDownLoader {
         mMemoryCache = new ImageCache(paramContext);
     }
 
-    private void downloadImage(final ImageView imageView, final String url) {
-        Log.d(TAG, "网络加载：" + url);
-        final Handler handler = new Handler(Looper.getMainLooper()) {
-            @Override
-            public void handleMessage(Message msg) {
-                super.handleMessage(msg);
-                Bitmap bit = (Bitmap) msg.obj;
-                if (bit != null)
-                    imageView.setImageBitmap(bit);
-            }
-        };
-        Executors.newFixedThreadPool(2).execute(new Runnable() {
-            @Override
-            public void run() {
-                Bitmap bitmap = null;
-                URL imgUrl = null;
-                try {
-                    imgUrl = new URL(url);
-                    HttpURLConnection conn = (HttpURLConnection) imgUrl
-                            .openConnection();
-                    conn.setDoInput(true);
-                    conn.connect();
-                    InputStream is = conn.getInputStream();
-                    bitmap = BitmapFactory.decodeStream(is);
-                    is.close();
-                    addBitmapToMemoryCache(url, bitmap);
-                    mMemoryCache.putDiskCache(bitmap, url);
-                    handler.sendMessage(handler.obtainMessage(0, bitmap));
-                } catch (IOException e) {
-                    e.printStackTrace();
+    final Handler handler = new Handler(Looper.getMainLooper()) {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            Object[] objects = (Object[]) msg.obj;
+            Log.i(TAG, "handleMessage object lenght = " + objects.length);
+            if (objects != null && objects.length >= 2) {
+                ImageView imageView = (ImageView) objects[0];
+                Bitmap bitmap = (Bitmap) objects[1];
+                OnLoadImageListener listener = objects.length > 2 ? (OnLoadImageListener) objects[2] : null;
+                if (msg.what == 2) {
+                    imageView.setImageBitmap(bitmap);
+                    if (listener != null) listener.onSuccess();
+                } else if (msg.what == -1) {
+                    if (listener != null) listener.onFailed();
                 }
+            } else {
+                Log.e(TAG, "handleMessage erro");
             }
-        });
+        }
+    };
+
+    private void downloadImage(final ImageView imageView, final String url) {
+        downloadImage(imageView, url, null);
+    }
+
+    private void downloadImage(final ImageView imageView, final String url, OnLoadImageListener listener) {
+        Log.d(TAG, "网络加载：" + url);
+        Executors.newFixedThreadPool(2).execute(new ImageRunnableImage(imageView, url, listener));
+    }
+
+
+    class ImageRunnableImage implements Runnable {
+        ImageView imageView;
+        String url;
+        OnLoadImageListener listener;
+
+        public ImageRunnableImage(ImageView imageView, String url) {
+            this.imageView = imageView;
+            this.url = url;
+        }
+
+        public ImageRunnableImage(ImageView imageView, String url, OnLoadImageListener listener) {
+            this.imageView = imageView;
+            this.url = url;
+            this.listener = listener;
+        }
+
+        @Override
+        public void run() {
+            Bitmap bitmap = null;
+            URL imgUrl = null;
+            try {
+                imgUrl = new URL(url);
+                HttpURLConnection conn = (HttpURLConnection) imgUrl
+                        .openConnection();
+                conn.setDoInput(true);
+                conn.connect();
+                InputStream is = conn.getInputStream();
+                bitmap = BitmapFactory.decodeStream(is);
+//                    bitmap = compressImage(bitmap);
+                is.close();
+                addBitmapToMemoryCache(url, bitmap);
+                mMemoryCache.putDiskCache(bitmap, url);
+                handler.sendMessage(handler.obtainMessage(2, new Object[]{imageView, bitmap, listener}));
+            } catch (IOException e) {
+                Logger.e(e.getMessage(), e);
+                handler.sendMessage(handler.obtainMessage(-1, new Object[]{imageView, bitmap, listener}));
+            }
+        }
     }
 
     private void addBitmapToMemoryCache(String paramString, Bitmap paramBitmap) {
@@ -111,23 +147,48 @@ public class ImageDownLoader {
         return bitmap;
     }
 
-    public void load(ImageView imageView, String url) {
-        if (TextUtils.isEmpty(url)) return;
+    private Bitmap getBitmap(String url) {
+        if (TextUtils.isEmpty(url)) return null;
         Bitmap bitmap = getBitmapFromMemCache(url);
         if (bitmap != null) {
-            Log.d(TAG, "内存加载：" + url);
-            imageView.setImageBitmap(bitmap);
-            return;
+            Log.d(TAG, "内存中加载：" + url);
+            return bitmap;
         }
 
         bitmap = mMemoryCache.getDiskCache(url);
         if (bitmap != null) {
-            Log.d(TAG, "磁盘加载：" + url);
+            Log.d(TAG, "磁盘中加载：" + url);
             addBitmapToMemoryCache(url, bitmap);
-            imageView.setImageBitmap(bitmap);
-            return;
+            return bitmap;
         }
-        downloadImage(imageView, url);
+        return null;
+    }
+
+    public ImageDownLoader load(ImageView imageView, String url) {
+        Bitmap bitmap = getBitmap(url);
+        if (bitmap != null) {
+            handler.sendMessage(handler.obtainMessage(2, new Object[]{imageView, bitmap}));
+        } else {
+            downloadImage(imageView, url);
+        }
+        return this;
+    }
+
+    public ImageDownLoader load(ImageView imageView, String url, OnLoadImageListener listener) {
+        Bitmap bitmap = getBitmap(url);
+        if (bitmap != null) {
+            handler.sendMessage(handler.obtainMessage(2, new Object[]{imageView, bitmap, listener}));
+        } else {
+            downloadImage(imageView, url, listener);
+        }
+        return this;
+    }
+
+
+    public interface OnLoadImageListener {
+        void onSuccess();
+
+        void onFailed();
     }
 
     public static class ImageCache extends LruCache<String, Bitmap> {
@@ -149,7 +210,6 @@ public class ImageDownLoader {
             diskpath = getDiskCacheDir(context, "bitmap");
         }
 
-
         @Override
         protected int sizeOf(String key, Bitmap value) {
             return value.getRowBytes() * value.getHeight();
@@ -170,13 +230,13 @@ public class ImageDownLoader {
         public void putDiskCache(Bitmap paramBitmap, String paramString) {
             if (getDiskCache(paramString) != null || !hasPermissions) return;
             try {
-               if (paramString.endsWith(".jpg")) {
-                   paramString = diskpath + File.separator + md5(paramString) + ".jpg";
-               } else if (paramString.endsWith(".png")) {
-                   paramString = diskpath + File.separator + md5(paramString) + "png";
-               }
+                if (paramString.endsWith(".jpg")) {
+                    paramString = diskpath + File.separator + md5(paramString) + ".jpg";
+                } else if (paramString.endsWith(".png")) {
+                    paramString = diskpath + File.separator + md5(paramString) + "png";
+                }
                 File file = new File(paramString);
-                if (file.exists() ? file.createNewFile() : (file.getParentFile().exists() ? file.createNewFile() : file.getParentFile().mkdirs())){
+                if (file.exists() ? file.createNewFile() : (file.getParentFile().exists() ? file.createNewFile() : file.getParentFile().mkdirs())) {
                     FileOutputStream fileOutputStream = new FileOutputStream(file);
                     paramBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
                     fileOutputStream.flush();
@@ -191,17 +251,18 @@ public class ImageDownLoader {
 
         public Bitmap getDiskCache(String paramString) {
             if (!hasPermissions) return null;
-           if (paramString.endsWith(".jpg")) {
-               paramString = diskpath + File.separator + md5(paramString) + ".jpg";
-           } else if (paramString.endsWith(".png")) {
-               paramString = diskpath + File.separator + md5(paramString) + "png";
-           }
+            if (paramString.endsWith(".jpg")) {
+                paramString = diskpath + File.separator + md5(paramString) + ".jpg";
+            } else if (paramString.endsWith(".png")) {
+                paramString = diskpath + File.separator + md5(paramString) + "png";
+            }
             if (new File(paramString).exists()) {
                 return BitmapFactory.decodeFile(paramString);
             }
             return null;
         }
     }
+
 
     public static String md5(String content) {
         byte[] hash;
@@ -253,8 +314,7 @@ public class ImageDownLoader {
         }
         return context.checkPermission(permission, android.os.Process.myPid(), Process.myUid());
     }
-    
-    
+
     /**
      * 对图片质量进行压缩
      *
@@ -277,7 +337,6 @@ public class ImageDownLoader {
         //把压缩后的数据baos存放到ByteArrayInputStream中
         ByteArrayInputStream isBm = new ByteArrayInputStream(baos.toByteArray());
         //把ByteArrayInputStream数据生成图片
-        Bitmap newBitmap = BitmapFactory.decodeStream(isBm, null, null);
-        return newBitmap;
+        return BitmapFactory.decodeStream(isBm, null, null);
     }
 }
