@@ -252,9 +252,23 @@ xml文件读取、写入工具类
 
 ## [ImageDownLoader](util/ImageDownLoader.java)
 
-手写的三级缓存的图片加载框架，适用于图片不多、代码耦合度低的sdk场景，简单快捷，无需多余框架代码及可做到，简单好用
-
+手写的三级缓存的图片加载框架，适用于图片不多、代码耦合度低的sdk场景，简单快捷，无需多余框架代码及可做到，简单好用，且支持回调和异步操作
+      
+      //常规调用
       ImageDownLoader.getInstance(getActivity()).load(imageView,data.getAC_Url());
+      
+      //支持回调的使用
+      ImageDownLoader.getInstance(context).load(imageView, data.getUrl(), new ImageDownLoader.OnLoadImageListener() {
+                @Override
+                public void onSuccess() {
+                   
+                }
+
+                @Override
+                public void onFailed() {
+
+                }
+            });
 
 
 #### Android之网络图片加载并实现线程切换一套解决方案：
