@@ -309,6 +309,34 @@ xml文件读取、写入工具类
     }
 
 
+#### [拦截Activity的启动流程绕过AndroidManifest检测](https://www.jianshu.com/p/a3c86e074abd)
+
+1 使用：在applciation中初始化
+
+
+               /**
+                * @Created by: chengzj
+                * @创建时间: 2022/7/7 18:39
+                * @描述:
+                */
+               public class HookApplication extends Application {
+
+                   @Override
+                   public void onCreate() {
+                       super.onCreate();
+                       try {
+                           HookStartActivityUtil  hookStartActivityUtil = new HookStartActivityUtil(this,ProxyActivity.class);
+                           hookStartActivityUtil.hookStartActivity();
+                           hookStartActivityUtil.hookLaunchActivity();
+                       } catch (Exception e) {
+                           e.printStackTrace();
+                       }
+                   }
+               }
+
+
+
+
 ## Contact Me
 
 - Github: github.com/cheng2016
