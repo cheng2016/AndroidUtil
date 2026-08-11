@@ -4,8 +4,14 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import io.github.cheng2016.androidutil.core.AndroidUtilLogger
+import io.github.cheng2016.androidutil.core.ByteSize
+import io.github.cheng2016.androidutil.core.CrashHandler
+import io.github.cheng2016.androidutil.core.DeviceProfile
 import io.github.cheng2016.androidutil.core.DigestUtils
+import io.github.cheng2016.androidutil.core.NetworkStatus
 import io.github.cheng2016.androidutil.core.Preferences
+import io.github.cheng2016.androidutil.core.StorageSpace
+import io.github.cheng2016.androidutil.core.Toasts
 import io.github.cheng2016.androidutil.network.AndroidHttpClient
 import io.github.cheng2016.androidutil.network.HttpResult
 import io.github.cheng2016.androidutil.permissions.PermissionGroups
@@ -30,6 +36,8 @@ class MainActivity : AppCompatActivity() {
                 fileEnabled = true,
             ),
         )
+        // 显式安装：崩溃报告写入 files/logs/crash，再交给系统默认处理器
+        CrashHandler.install(applicationContext)
         permissionRequester = PermissionRequester.register(this)
 
         binding.writeLog.setOnClickListener {
@@ -93,7 +101,12 @@ class MainActivity : AppCompatActivity() {
         val count = preferences.getInt("sample_runs") + 1
         preferences.putInt("sample_runs", count)
         val digest = DigestUtils.sha256Hex("AndroidUtil")
-        binding.result.text = getString(R.string.core_result, count, digest)
+        val free = ByteSize.format(StorageSpace.internal(this).freeBytes)
+        val net = NetworkStatus.snapshot(this)
+        binding.result.text =
+            getString(R.string.core_result, count, digest) +
+                "\nfree=$free online=${net.online} wifi=${net.wifi}"
+        Toasts.short(this, DeviceProfile.summary())
     }
 
     override fun onDestroy() {

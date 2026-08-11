@@ -1,25 +1,26 @@
-# Migration from the source-snippet repository
+# 从旧「源码片段」仓库迁移
 
-Version 1.0 is a deliberate reset. The old `util/` directory was not a buildable library and its default-package APIs are not binary compatible with the new modules.
+1.0 是刻意重置。旧的 `util/` 目录本身无法作为可构建的库发布，且默认包名 API 与新模块不存在二进制兼容。
 
-| Legacy source | Replacement | Notes |
+| 旧源码 | 替代 | 说明 |
 | --- | --- | --- |
-| `Logger` / `CrashHandler` | `core` logging API | Uses app-private storage; crash-handler installation is intentionally not automatic. |
-| `PreferenceUtils` | `Preferences` | Consistent `apply()` writes and application context only. |
-| `RegexUtils` / `MD5Utils` | `RegexUtils` / `DigestUtils` | MD5 is retained only for non-security checksums. Prefer SHA-256. |
-| `AppUtils` / `ResourceUtils` | `AppInfo` / `ResourceReader` | No global application singleton or hard-coded asset name. |
-| `OkHttpUtil`, `HttpUtil`, `HttpClientUtils` | `AndroidHttpClient` | Coroutine-first, cancellable, injectable, and UI-independent. |
-| `PermissionHelper`, `Permissons4App` | `PermissionRequester` | Register before `STARTED`; no result forwarding is required. |
-| `ImageDownLoader` | Coil or Glide | Image loading is outside this focused library's scope. |
-| `BaseFragment` | AndroidX Fragment lifecycle APIs | Use `viewLifecycleOwner` and `repeatOnLifecycle`. |
-| `DeviceUtils` IMEI/MAC methods | No replacement | Restricted persistent identifiers are not appropriate for a general utility library. |
-| `HookStartActivityUtil` | No replacement | It bypassed manifest checks and relied on hidden, unstable platform APIs. |
-| `AlipayUtil` / `PluginFactory` | Vendor SDK integration modules in the app | Security-sensitive vendor integrations must track current official SDKs. |
-| `XmlUtils` token storage | DataStore / encrypted app storage | Tokens must not be logged or written to shared external storage. |
+| `Logger` | `AndroidUtilLogger` | 文件日志默认关闭；开启后写入 `{filesDir}/logs/`。 |
+| `CrashHandler` | `CrashHandler` | 需显式 `install`；报告写入 `{filesDir}/logs/crash/`，不再写外部存储、不弹 Toast、不反射整表 `Build`。 |
+| `PreferenceUtils` | `Preferences` | 统一 `apply()` 写入，仅用 Application Context。 |
+| `RegexUtils` / `MD5Utils` | `RegexUtils` / `DigestUtils` | MD5 仅保留非安全校验场景，完整性优先用 SHA-256。 |
+| `AppUtils` / `ResourceUtils` | `AppInfo` / `ResourceReader` | 无全局 Application 单例，无写死的 asset 名。 |
+| `OkHttpUtil`、`HttpUtil`、`HttpClientUtils` | `AndroidHttpClient` | 协程优先、可取消、可注入、不绑 UI。 |
+| `PermissionHelper`、`Permissons4App` | `PermissionRequester` | 在 STARTED 之前注册；无需转发权限回调。 |
+| `ImageDownLoader` | Coil / Glide | 图片加载不在本库聚焦范围内。 |
+| `BaseFragment` | AndroidX Fragment 生命周期 API | 使用 `viewLifecycleOwner`、`repeatOnLifecycle`。 |
+| `DeviceUtils` 的 IMEI/MAC | 无替代 | 受限持久标识不适合作为通用工具库能力。 |
+| `HookStartActivityUtil` | 无替代 | 绕过清单检查且依赖不稳定的隐藏 API。 |
+| `AlipayUtil` / `PluginFactory` | 应用内对接官方厂商 SDK | 支付等敏感能力必须跟随官方 SDK。 |
+| `XmlUtils` 存 token | DataStore / 加密应用存储 | Token 不得打日志，也不得写入共享外部存储。 |
 
-## Dependency migration
+## 依赖迁移
 
-Replace copied Java files with only the modules you need:
+删掉拷贝的 Java 文件，只引入需要的模块：
 
 ```kotlin
 dependencies {
@@ -29,4 +30,4 @@ dependencies {
 }
 ```
 
-Until the first Maven Central release, use `publishToMavenLocal` and the snapshot version shown in `gradle.properties`.
+公开 API 的详细用法见根目录 [README.md](../README.md)。英文对照见 [README.en.md](../README.en.md)。

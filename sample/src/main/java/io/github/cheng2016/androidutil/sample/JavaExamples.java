@@ -3,6 +3,7 @@ package io.github.cheng2016.androidutil.sample;
 import android.content.Context;
 
 import io.github.cheng2016.androidutil.core.AndroidUtilLogger;
+import io.github.cheng2016.androidutil.core.CrashHandler;
 import io.github.cheng2016.androidutil.core.DigestUtils;
 import io.github.cheng2016.androidutil.core.Preferences;
 import io.github.cheng2016.androidutil.network.AndroidHttpClient;
@@ -17,6 +18,7 @@ public final class JavaExamples {
 
     public static String useCore(Context context) {
         AndroidUtilLogger.i("JavaSample", "Java interop works");
+        CrashHandler.install(context);
         Preferences preferences = Preferences.of(context);
         preferences.putBoolean("java_sample_seen", true);
         return DigestUtils.sha256Hex("AndroidUtil");

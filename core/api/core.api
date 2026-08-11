@@ -85,11 +85,114 @@ public final class io/github/cheng2016/androidutil/core/AppInfo {
 	public static final fun versionName (Landroid/content/Context;)Ljava/lang/String;
 }
 
+public final class io/github/cheng2016/androidutil/core/BatteryStatus {
+	public static final field INSTANCE Lio/github/cheng2016/androidutil/core/BatteryStatus;
+	public static final fun snapshot (Landroid/content/Context;)Lio/github/cheng2016/androidutil/core/BatteryStatus$Snapshot;
+}
+
+public final class io/github/cheng2016/androidutil/core/BatteryStatus$Snapshot {
+	public fun <init> (IZZZZ)V
+	public final fun component1 ()I
+	public final fun component2 ()Z
+	public final fun component3 ()Z
+	public final fun component4 ()Z
+	public final fun component5 ()Z
+	public final fun copy (IZZZZ)Lio/github/cheng2016/androidutil/core/BatteryStatus$Snapshot;
+	public static synthetic fun copy$default (Lio/github/cheng2016/androidutil/core/BatteryStatus$Snapshot;IZZZZILjava/lang/Object;)Lio/github/cheng2016/androidutil/core/BatteryStatus$Snapshot;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCharging ()Z
+	public final fun getChargingAc ()Z
+	public final fun getChargingUsb ()Z
+	public final fun getChargingWireless ()Z
+	public final fun getLevelPercent ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
 public final class io/github/cheng2016/androidutil/core/BuildConfig {
 	public static final field BUILD_TYPE Ljava/lang/String;
 	public static final field DEBUG Z
 	public static final field LIBRARY_PACKAGE_NAME Ljava/lang/String;
 	public fun <init> ()V
+}
+
+public final class io/github/cheng2016/androidutil/core/ByteSize {
+	public static final field INSTANCE Lio/github/cheng2016/androidutil/core/ByteSize;
+	public static final fun format (J)Ljava/lang/String;
+	public static final fun format (JI)Ljava/lang/String;
+	public static final fun format (JILjava/util/Locale;)Ljava/lang/String;
+	public static synthetic fun format$default (JILjava/util/Locale;ILjava/lang/Object;)Ljava/lang/String;
+	public static final fun gb (J)J
+	public static final fun kb (J)J
+	public static final fun mb (J)J
+}
+
+public final class io/github/cheng2016/androidutil/core/ClipboardHelper {
+	public static final field INSTANCE Lio/github/cheng2016/androidutil/core/ClipboardHelper;
+	public static final fun clear (Landroid/content/Context;)V
+	public static final fun getText (Landroid/content/Context;)Ljava/lang/CharSequence;
+	public static final fun hasText (Landroid/content/Context;)Z
+	public static final fun setText (Landroid/content/Context;Ljava/lang/CharSequence;)V
+	public static final fun setText (Landroid/content/Context;Ljava/lang/CharSequence;Ljava/lang/String;)V
+	public static final fun setText (Landroid/content/Context;Ljava/lang/CharSequence;Ljava/lang/String;Z)V
+	public static synthetic fun setText$default (Landroid/content/Context;Ljava/lang/CharSequence;Ljava/lang/String;ZILjava/lang/Object;)V
+}
+
+public final class io/github/cheng2016/androidutil/core/CrashHandler {
+	public static final field INSTANCE Lio/github/cheng2016/androidutil/core/CrashHandler;
+	public static final fun crashDirectory (Landroid/content/Context;)Ljava/io/File;
+	public static final fun install (Landroid/content/Context;)V
+	public static final fun install (Landroid/content/Context;Lio/github/cheng2016/androidutil/core/CrashHandler$Config;)V
+	public static synthetic fun install$default (Landroid/content/Context;Lio/github/cheng2016/androidutil/core/CrashHandler$Config;ILjava/lang/Object;)V
+	public static final fun isInstalled ()Z
+	public static final fun listCrashFiles (Landroid/content/Context;)Ljava/util/List;
+	public static final fun setListener (Lio/github/cheng2016/androidutil/core/CrashHandler$Listener;)V
+	public static final fun uninstall ()V
+	public static final fun writeReport (Landroid/content/Context;Ljava/lang/Throwable;)Ljava/io/File;
+	public static final fun writeReport (Landroid/content/Context;Ljava/lang/Throwable;Ljava/lang/String;)Ljava/io/File;
+	public static synthetic fun writeReport$default (Landroid/content/Context;Ljava/lang/Throwable;Ljava/lang/String;ILjava/lang/Object;)Ljava/io/File;
+}
+
+public final class io/github/cheng2016/androidutil/core/CrashHandler$Config {
+	public fun <init> ()V
+	public fun <init> (Z)V
+	public fun <init> (ZZ)V
+	public fun <init> (ZZZ)V
+	public synthetic fun <init> (ZZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Z
+	public final fun component2 ()Z
+	public final fun component3 ()Z
+	public final fun copy (ZZZ)Lio/github/cheng2016/androidutil/core/CrashHandler$Config;
+	public static synthetic fun copy$default (Lio/github/cheng2016/androidutil/core/CrashHandler$Config;ZZZILjava/lang/Object;)Lio/github/cheng2016/androidutil/core/CrashHandler$Config;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAlsoLogToAndroidUtilLogger ()Z
+	public final fun getChainToDefault ()Z
+	public final fun getIncludeBuildFingerprint ()Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class io/github/cheng2016/androidutil/core/CrashHandler$Listener {
+	public abstract fun onCrash (Ljava/lang/Thread;Ljava/lang/Throwable;Ljava/io/File;)V
+}
+
+public final class io/github/cheng2016/androidutil/core/Debouncer {
+	public fun <init> ()V
+	public fun <init> (J)V
+	public synthetic fun <init> (JILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun reset ()V
+	public final fun tryAcquire ()Z
+}
+
+public final class io/github/cheng2016/androidutil/core/DeviceProfile {
+	public static final field INSTANCE Lio/github/cheng2016/androidutil/core/DeviceProfile;
+	public static final fun brand ()Ljava/lang/String;
+	public static final fun device ()Ljava/lang/String;
+	public static final fun manufacturer ()Ljava/lang/String;
+	public static final fun model ()Ljava/lang/String;
+	public static final fun release ()Ljava/lang/String;
+	public static final fun sdkInt ()I
+	public static final fun summary ()Ljava/lang/String;
 }
 
 public final class io/github/cheng2016/androidutil/core/DigestUtils {
@@ -102,6 +205,54 @@ public final class io/github/cheng2016/androidutil/core/DigestUtils {
 	public static final fun sha256Hex (Ljava/lang/String;Ljava/nio/charset/Charset;)Ljava/lang/String;
 	public static final fun sha256Hex ([B)Ljava/lang/String;
 	public static synthetic fun sha256Hex$default (Ljava/lang/String;Ljava/nio/charset/Charset;ILjava/lang/Object;)Ljava/lang/String;
+}
+
+public final class io/github/cheng2016/androidutil/core/EncodingUtils {
+	public static final field INSTANCE Lio/github/cheng2016/androidutil/core/EncodingUtils;
+	public static final fun base64Decode (Ljava/lang/String;)[B
+	public static final fun base64Decode (Ljava/lang/String;Z)[B
+	public static synthetic fun base64Decode$default (Ljava/lang/String;ZILjava/lang/Object;)[B
+	public static final fun base64DecodeToString (Ljava/lang/String;)Ljava/lang/String;
+	public static final fun base64DecodeToString (Ljava/lang/String;Ljava/nio/charset/Charset;)Ljava/lang/String;
+	public static final fun base64DecodeToString (Ljava/lang/String;Ljava/nio/charset/Charset;Z)Ljava/lang/String;
+	public static synthetic fun base64DecodeToString$default (Ljava/lang/String;Ljava/nio/charset/Charset;ZILjava/lang/Object;)Ljava/lang/String;
+	public static final fun base64Encode (Ljava/lang/String;)Ljava/lang/String;
+	public static final fun base64Encode (Ljava/lang/String;Ljava/nio/charset/Charset;)Ljava/lang/String;
+	public static final fun base64Encode (Ljava/lang/String;Ljava/nio/charset/Charset;Z)Ljava/lang/String;
+	public static final fun base64Encode ([B)Ljava/lang/String;
+	public static final fun base64Encode ([BZ)Ljava/lang/String;
+	public static synthetic fun base64Encode$default (Ljava/lang/String;Ljava/nio/charset/Charset;ZILjava/lang/Object;)Ljava/lang/String;
+	public static synthetic fun base64Encode$default ([BZILjava/lang/Object;)Ljava/lang/String;
+	public static final fun hexDecode (Ljava/lang/String;)[B
+	public static final fun hexEncode ([B)Ljava/lang/String;
+}
+
+public final class io/github/cheng2016/androidutil/core/Haptics {
+	public static final field INSTANCE Lio/github/cheng2016/androidutil/core/Haptics;
+	public static final fun cancel (Landroid/content/Context;)V
+	public static final fun confirm (Landroid/content/Context;)V
+	public static final fun tick (Landroid/content/Context;)V
+	public static final fun vibrate (Landroid/content/Context;J)V
+	public static final fun vibrate (Landroid/content/Context;JI)V
+	public static synthetic fun vibrate$default (Landroid/content/Context;JIILjava/lang/Object;)V
+}
+
+public final class io/github/cheng2016/androidutil/core/Intents {
+	public static final field INSTANCE Lio/github/cheng2016/androidutil/core/Intents;
+	public static final fun appDetailsSettings (Landroid/content/Context;)Z
+	public static final fun dial (Landroid/content/Context;Ljava/lang/String;)Z
+	public static final fun openUrl (Landroid/content/Context;Ljava/lang/String;)Z
+	public static final fun sendEmail (Landroid/content/Context;Ljava/lang/String;)Z
+	public static final fun sendEmail (Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;)Z
+	public static final fun sendEmail (Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z
+	public static synthetic fun sendEmail$default (Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Z
+	public static final fun shareText (Landroid/content/Context;Ljava/lang/CharSequence;)Z
+	public static final fun shareText (Landroid/content/Context;Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Z
+	public static synthetic fun shareText$default (Landroid/content/Context;Ljava/lang/CharSequence;Ljava/lang/CharSequence;ILjava/lang/Object;)Z
+	public static final fun start (Landroid/content/Context;Landroid/content/Intent;)Z
+	public static final fun startChooser (Landroid/content/Context;Landroid/content/Intent;)Z
+	public static final fun startChooser (Landroid/content/Context;Landroid/content/Intent;Ljava/lang/CharSequence;)Z
+	public static synthetic fun startChooser$default (Landroid/content/Context;Landroid/content/Intent;Ljava/lang/CharSequence;ILjava/lang/Object;)Z
 }
 
 public final class io/github/cheng2016/androidutil/core/LunarDate {
@@ -132,6 +283,59 @@ public final class io/github/cheng2016/androidutil/core/LunarDate$Companion {
 	public final fun chinaDayString (I)Ljava/lang/String;
 	public final fun fromSolar (III)Lio/github/cheng2016/androidutil/core/LunarDate;
 	public final fun fromSolar (Ljava/util/Calendar;)Lio/github/cheng2016/androidutil/core/LunarDate;
+}
+
+public final class io/github/cheng2016/androidutil/core/MainThread {
+	public static final field INSTANCE Lio/github/cheng2016/androidutil/core/MainThread;
+	public static final fun executor ()Ljava/util/concurrent/Executor;
+	public static final fun isMainThread ()Z
+	public static final fun post (Ljava/lang/Runnable;)V
+	public static final fun postDelayed (JLjava/lang/Runnable;)V
+	public static final fun remove (Ljava/lang/Runnable;)V
+	public static final fun run (Ljava/lang/Runnable;)V
+}
+
+public final class io/github/cheng2016/androidutil/core/NetworkStatus {
+	public static final field INSTANCE Lio/github/cheng2016/androidutil/core/NetworkStatus;
+	public static final fun isCellular (Landroid/content/Context;)Z
+	public static final fun isOnline (Landroid/content/Context;)Z
+	public static final fun isValidated (Landroid/content/Context;)Z
+	public static final fun isVpn (Landroid/content/Context;)Z
+	public static final fun isWifi (Landroid/content/Context;)Z
+	public static final fun observe (Landroid/content/Context;Lio/github/cheng2016/androidutil/core/NetworkStatus$Listener;)Ljava/lang/AutoCloseable;
+	public static final fun snapshot (Landroid/content/Context;)Lio/github/cheng2016/androidutil/core/NetworkStatus$Snapshot;
+}
+
+public abstract interface class io/github/cheng2016/androidutil/core/NetworkStatus$Listener {
+	public abstract fun onChanged (Lio/github/cheng2016/androidutil/core/NetworkStatus$Snapshot;)V
+}
+
+public final class io/github/cheng2016/androidutil/core/NetworkStatus$Snapshot {
+	public fun <init> (ZZZZZ)V
+	public final fun component1 ()Z
+	public final fun component2 ()Z
+	public final fun component3 ()Z
+	public final fun component4 ()Z
+	public final fun component5 ()Z
+	public final fun copy (ZZZZZ)Lio/github/cheng2016/androidutil/core/NetworkStatus$Snapshot;
+	public static synthetic fun copy$default (Lio/github/cheng2016/androidutil/core/NetworkStatus$Snapshot;ZZZZZILjava/lang/Object;)Lio/github/cheng2016/androidutil/core/NetworkStatus$Snapshot;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCellular ()Z
+	public final fun getOnline ()Z
+	public final fun getValidated ()Z
+	public final fun getVpn ()Z
+	public final fun getWifi ()Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/github/cheng2016/androidutil/core/NotificationChannels {
+	public static final field INSTANCE Lio/github/cheng2016/androidutil/core/NotificationChannels;
+	public static final fun ensure (Landroid/content/Context;Ljava/lang/String;Ljava/lang/CharSequence;)V
+	public static final fun ensure (Landroid/content/Context;Ljava/lang/String;Ljava/lang/CharSequence;I)V
+	public static final fun ensure (Landroid/content/Context;Ljava/lang/String;Ljava/lang/CharSequence;ILjava/lang/String;)V
+	public static synthetic fun ensure$default (Landroid/content/Context;Ljava/lang/String;Ljava/lang/CharSequence;ILjava/lang/String;ILjava/lang/Object;)V
+	public static final fun exists (Landroid/content/Context;Ljava/lang/String;)Z
 }
 
 public final class io/github/cheng2016/androidutil/core/Preferences {
@@ -171,6 +375,12 @@ public final class io/github/cheng2016/androidutil/core/Preferences$Companion {
 	public final fun of (Landroid/content/Context;Ljava/lang/String;)Lio/github/cheng2016/androidutil/core/Preferences;
 	public static synthetic fun of$default (Lio/github/cheng2016/androidutil/core/Preferences$Companion;Landroid/content/Context;Ljava/lang/String;ILjava/lang/Object;)Lio/github/cheng2016/androidutil/core/Preferences;
 	public final fun wrap (Landroid/content/SharedPreferences;)Lio/github/cheng2016/androidutil/core/Preferences;
+}
+
+public final class io/github/cheng2016/androidutil/core/ProcessInfo {
+	public static final field INSTANCE Lio/github/cheng2016/androidutil/core/ProcessInfo;
+	public static final fun isMainProcess (Landroid/content/Context;)Z
+	public static final fun processName (Landroid/content/Context;)Ljava/lang/String;
 }
 
 public final class io/github/cheng2016/androidutil/core/RedactingSanitizer : io/github/cheng2016/androidutil/core/AndroidUtilLogger$Sanitizer {
@@ -233,5 +443,127 @@ public final class io/github/cheng2016/androidutil/core/ResourceReader {
 	public static final fun readRawText (Landroid/content/Context;I)Ljava/lang/String;
 	public static final fun readRawText (Landroid/content/Context;ILjava/nio/charset/Charset;)Ljava/lang/String;
 	public static synthetic fun readRawText$default (Landroid/content/Context;ILjava/nio/charset/Charset;ILjava/lang/Object;)Ljava/lang/String;
+}
+
+public final class io/github/cheng2016/androidutil/core/ScreenMetrics {
+	public static final field INSTANCE Lio/github/cheng2016/androidutil/core/ScreenMetrics;
+	public static final fun densityDpi (Landroid/content/Context;)I
+	public static final fun dpToPx (Landroid/content/Context;F)F
+	public static final fun dpToPxInt (Landroid/content/Context;F)I
+	public static final fun heightPx (Landroid/content/Context;)I
+	public static final fun isDarkMode (Landroid/content/Context;)Z
+	public static final fun pxToDp (Landroid/content/Context;F)F
+	public static final fun pxToSp (Landroid/content/Context;F)F
+	public static final fun spToPx (Landroid/content/Context;F)F
+	public static final fun widthPx (Landroid/content/Context;)I
+}
+
+public final class io/github/cheng2016/androidutil/core/ScreenMetricsKt {
+	public static final fun dp (Landroid/content/Context;F)F
+	public static final fun dp (Landroid/content/Context;I)I
+	public static final fun sp (Landroid/content/Context;F)F
+}
+
+public final class io/github/cheng2016/androidutil/core/SoftInput {
+	public static final field INSTANCE Lio/github/cheng2016/androidutil/core/SoftInput;
+	public static final fun hide (Landroid/app/Activity;)V
+	public static final fun hide (Landroid/view/View;)V
+	public static final fun show (Landroid/view/View;)V
+	public static final fun toggle (Landroid/content/Context;)V
+}
+
+public final class io/github/cheng2016/androidutil/core/StorageSpace {
+	public static final field INSTANCE Lio/github/cheng2016/androidutil/core/StorageSpace;
+	public static final fun externalApp (Landroid/content/Context;)Lio/github/cheng2016/androidutil/core/StorageSpace$Space;
+	public static final fun internal (Landroid/content/Context;)Lio/github/cheng2016/androidutil/core/StorageSpace$Space;
+	public static final fun isExternalMounted ()Z
+	public static final fun of (Ljava/io/File;)Lio/github/cheng2016/androidutil/core/StorageSpace$Space;
+}
+
+public final class io/github/cheng2016/androidutil/core/StorageSpace$Space {
+	public fun <init> (JJ)V
+	public final fun component1 ()J
+	public final fun component2 ()J
+	public final fun copy (JJ)Lio/github/cheng2016/androidutil/core/StorageSpace$Space;
+	public static synthetic fun copy$default (Lio/github/cheng2016/androidutil/core/StorageSpace$Space;JJILjava/lang/Object;)Lio/github/cheng2016/androidutil/core/StorageSpace$Space;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getFreeBytes ()J
+	public final fun getTotalBytes ()J
+	public final fun getUsedBytes ()J
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/github/cheng2016/androidutil/core/TextSpans {
+	public static final field Companion Lio/github/cheng2016/androidutil/core/TextSpans$Companion;
+	public final fun append (Ljava/lang/CharSequence;)Lio/github/cheng2016/androidutil/core/TextSpans;
+	public final fun bold (Ljava/lang/CharSequence;)Lio/github/cheng2016/androidutil/core/TextSpans;
+	public final fun build ()Ljava/lang/CharSequence;
+	public static final fun build (Lkotlin/jvm/functions/Function1;)Ljava/lang/CharSequence;
+	public final fun color (ILjava/lang/CharSequence;)Lio/github/cheng2016/androidutil/core/TextSpans;
+	public static final fun create ()Lio/github/cheng2016/androidutil/core/TextSpans;
+	public final fun italic (Ljava/lang/CharSequence;)Lio/github/cheng2016/androidutil/core/TextSpans;
+	public final fun size (FLjava/lang/CharSequence;)Lio/github/cheng2016/androidutil/core/TextSpans;
+	public final fun span (Ljava/lang/CharSequence;Ljava/lang/Object;)Lio/github/cheng2016/androidutil/core/TextSpans;
+	public fun toString ()Ljava/lang/String;
+	public final fun underline (Ljava/lang/CharSequence;)Lio/github/cheng2016/androidutil/core/TextSpans;
+}
+
+public final class io/github/cheng2016/androidutil/core/TextSpans$Companion {
+	public final fun build (Lkotlin/jvm/functions/Function1;)Ljava/lang/CharSequence;
+	public final fun create ()Lio/github/cheng2016/androidutil/core/TextSpans;
+}
+
+public final class io/github/cheng2016/androidutil/core/Throttler {
+	public fun <init> ()V
+	public fun <init> (J)V
+	public synthetic fun <init> (JILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun reset ()V
+	public final fun tryAcquire ()Z
+}
+
+public final class io/github/cheng2016/androidutil/core/TimeFormats {
+	public static final field INSTANCE Lio/github/cheng2016/androidutil/core/TimeFormats;
+	public static final fun durationClock (J)Ljava/lang/String;
+	public static final fun relativeToNow (J)Ljava/lang/String;
+	public static final fun relativeToNow (JJ)Ljava/lang/String;
+	public static final fun relativeToNow (JJZ)Ljava/lang/String;
+	public static synthetic fun relativeToNow$default (JJZILjava/lang/Object;)Ljava/lang/String;
+}
+
+public final class io/github/cheng2016/androidutil/core/Toasts {
+	public static final field INSTANCE Lio/github/cheng2016/androidutil/core/Toasts;
+	public static final fun cancel ()V
+	public static final fun long (Landroid/content/Context;Ljava/lang/CharSequence;)V
+	public static final fun short (Landroid/content/Context;Ljava/lang/CharSequence;)V
+}
+
+public final class io/github/cheng2016/androidutil/core/UriFiles {
+	public static final field INSTANCE Lio/github/cheng2016/androidutil/core/UriFiles;
+	public static final fun copyToCache (Landroid/content/Context;Landroid/net/Uri;)Ljava/io/File;
+	public static final fun copyToCache (Landroid/content/Context;Landroid/net/Uri;Ljava/lang/String;)Ljava/io/File;
+	public static synthetic fun copyToCache$default (Landroid/content/Context;Landroid/net/Uri;Ljava/lang/String;ILjava/lang/Object;)Ljava/io/File;
+	public static final fun meta (Landroid/content/Context;Landroid/net/Uri;)Lio/github/cheng2016/androidutil/core/UriFiles$Meta;
+}
+
+public final class io/github/cheng2016/androidutil/core/UriFiles$Meta {
+	public fun <init> (Ljava/lang/String;JLjava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()J
+	public final fun component3 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;JLjava/lang/String;)Lio/github/cheng2016/androidutil/core/UriFiles$Meta;
+	public static synthetic fun copy$default (Lio/github/cheng2016/androidutil/core/UriFiles$Meta;Ljava/lang/String;JLjava/lang/String;ILjava/lang/Object;)Lio/github/cheng2016/androidutil/core/UriFiles$Meta;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDisplayName ()Ljava/lang/String;
+	public final fun getMimeType ()Ljava/lang/String;
+	public final fun getSizeBytes ()J
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/github/cheng2016/androidutil/core/VersionUtils {
+	public static final field INSTANCE Lio/github/cheng2016/androidutil/core/VersionUtils;
+	public static final fun compare (Ljava/lang/String;Ljava/lang/String;)I
+	public static final fun isAtLeast (Ljava/lang/String;Ljava/lang/String;)Z
 }
 
