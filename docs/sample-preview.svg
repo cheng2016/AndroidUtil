@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="720" viewBox="0 0 360 720">
+  <rect width="360" height="720" rx="28" fill="#f7fbf5"/>
+  <rect x="16" y="16" width="328" height="688" rx="20" fill="#ffffff" stroke="#dce5da"/>
+  <text x="40" y="72" font-family="sans-serif" font-size="25" font-weight="700" fill="#17351d">AndroidUtil Sample</text>
+  <text x="40" y="105" font-family="sans-serif" font-size="14" fill="#46614a">Small, safe Android utilities.</text>
+  <g font-family="sans-serif" font-size="15" font-weight="600" text-anchor="middle">
+    <rect x="40" y="140" width="280" height="48" rx="24" fill="#1b5e20"/>
+    <text x="180" y="170" fill="#ffffff">Write private log</text>
+    <rect x="40" y="204" width="280" height="48" rx="24" fill="#ffffff" stroke="#1b5e20"/>
+    <text x="180" y="234" fill="#1b5e20">Request notification permission</text>
+    <rect x="40" y="268" width="280" height="48" rx="24" fill="#ffffff" stroke="#1b5e20"/>
+    <text x="180" y="298" fill="#1b5e20">Run HTTPS request</text>
+    <rect x="40" y="332" width="280" height="48" rx="24" fill="#ffffff" stroke="#1b5e20"/>
+    <text x="180" y="362" fill="#1b5e20">Run JSON POST</text>
+    <rect x="40" y="396" width="280" height="48" rx="24" fill="#ffffff" stroke="#1b5e20"/>
+    <text x="180" y="426" fill="#1b5e20">Run core utilities</text>
+  </g>
+  <rect x="40" y="480" width="280" height="128" rx="14" fill="#edf4eb"/>
+  <text x="56" y="514" font-family="monospace" font-size="13" fill="#29452e">Run #1</text>
+  <text x="56" y="542" font-family="monospace" font-size="13" fill="#29452e">SHA-256:</text>
+  <text x="56" y="568" font-family="monospace" font-size="11" fill="#46614a">33a7& safe, compile-checked output</text>
+</svg>

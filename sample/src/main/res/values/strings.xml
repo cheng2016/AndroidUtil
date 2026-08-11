@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">AndroidUtil Sample</string>
+    <string name="sample_intro">Small, safe Android utilities. Tap an action to inspect the result.</string>
+    <string name="write_log">Write private log</string>
+    <string name="request_notification">Request notification permission</string>
+    <string name="run_request">Run HTTPS request</string>
+    <string name="run_post">Run JSON POST</string>
+    <string name="run_utilities">Run core utilities</string>
+    <string name="idle">Ready</string>
+    <string name="permission_not_required">Notification runtime permission is not required on this API level.</string>
+    <string name="permission_result">Granted: %1$s\nDenied: %2$s\nPermanently denied: %3$s</string>
+    <string name="requesting_url">Requesting %1$s…</string>
+    <string name="http_result">HTTP %1$d: %2$s</string>
+    <string name="network_error">Network error: %1$s</string>
+    <string name="request_cancelled">Request cancelled</string>
+    <string name="core_result">Run #%1$d\nSHA-256: %2$s</string>
+</resources>

@@ -1,0 +1,27 @@
+name: Feature request
+description: Propose a focused utility or API improvement
+title: "[Feature] "
+labels: ["enhancement", "triage"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What recurring Android problem cannot be solved clearly with platform or established libraries?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed API and alternatives
+    validations:
+      required: true
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Scope check
+      options:
+        - label: This does not collect persistent hardware identifiers or bypass Android security.
+          required: true
+        - label: I considered solving this in application code or an established library.
+          required: true
